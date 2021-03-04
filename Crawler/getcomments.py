@@ -21,9 +21,6 @@ from selenium.webdriver.support.ui import Select
 
 DEBUG_MODE = True
 
-# https://www.facebook.com/eusuntdorianpopa/photos/a.402768046489498/3257697124329895/
-# https://www.facebook.com/klausiohannis/photos/pcb.3654493634637861/3654541041299787/
-
 msg = ""
 accountno = ""
 browser = None
@@ -82,16 +79,17 @@ def startFirefox(url):
 
 # add delay to bypass fb activity check
 def simulateHumanShort():
-    time.sleep(random.randint(2,8))
+    time.sleep(random.randint(1,2))
     
 def simulateHumanMedium():
-    time.sleep(random.randint(6,14))
+    time.sleep(random.randint(3,7))
     
 def simulateHumanLong():
-    time.sleep(random.randint(15,35))
+    time.sleep(random.randint(10,35))
     
 def browseURL(url, user, pwd):
     """Browse to Page"""
+    global data
 
     if "--GUI" in sys.argv:
         print_v("Starting Firefox w Selenium in GUI mode...")
@@ -106,127 +104,53 @@ def browseURL(url, user, pwd):
     # wait for page to load
     try:
         WebDriverWait(browser, 20).until(
-            expected_conditions.element_to_be_clickable((By.CSS_SELECTOR,"div[role=complementary]"))
+            expected_conditions.element_to_be_clickable((By.CSS_SELECTOR,"#dialog"))
         )
     except Exception as e:
         print_v("An exception has occured during page load(1): " + str(type(e)) + ' ' + str(e) )
 
-    # # hide login overlay
-    # login_overlay = browser.find_element_by_xpath("//div[@data-pagelet='page']/div[2]/div")
-    # browser.execute_script("arguments[0].style.display = 'none';", login_overlay)
+    # close login overlay
+    no_thanks_btn = browser.find_element_by_xpath("//div[@id='dialog']//paper-button[@aria-label='No thanks']")
+    browser.execute_script("arguments[0].click();", no_thanks_btn)
 
-    # # # hide cookie banner
-    # # cookie_overlay = browser.find_element_by_xpath("//div[@data-cookiebanner='banner']")
-    # # browser.execute_script("arguments[0].style.display = 'none';", cookie_overlay)
-    # cookie_overlay_btn = browser.find_element_by_xpath("//div[@aria-label='Close cookie banner button']")
-    # cookie_overlay_btn.click()
-    simulateHumanMedium()
-    browser.find_element_by_xpath("//input[@aria-label='Email or Phone']").send_keys(user)
-    simulateHumanShort()
-    browser.find_element_by_xpath("//input[@aria-label='Password']").send_keys(pwd)
-    simulateHumanShort()
-    browser.find_element_by_xpath("//div[@aria-label='Accessible login button']").click()
+    # manually agree with terms
 
     # wait for page to load
     try:
-        WebDriverWait(browser, 20).until(
-            expected_conditions.element_to_be_clickable((By.CSS_SELECTOR,"div[role=complementary]"))
+        WebDriverWait(browser, 40).until(
+            expected_conditions.element_to_be_clickable((By.CSS_SELECTOR,"#info-contents"))
         )
     except Exception as e:
         print_v("An exception has occured during page load(2): " + str(type(e)) + ' ' + str(e) )
 
-    comments_box = browser.find_element_by_css_selector("div[role=complementary]")
-
-    # wait for page to load
-    try:
-        WebDriverWait(browser, 20).until(
-            expected_conditions.element_to_be_clickable((By.XPATH,"//ul/preceding-sibling::div//div[@role='button']"))
-        )
-    except Exception as e:
-        print_v("An exception has occured during page load(3): " + str(type(e)) + ' ' + str(e) )
-
-    # select all comments
-    simulateHumanMedium()
-    relevant_filter = comments_box.find_element_by_xpath("//ul/preceding-sibling::div//div[@role='button']")
-    relevant_filter.click()
-
-    simulateHumanShort()
-    relevant_filter.find_element_by_xpath("//div[@role='menuitem'][3]").click()
-
-    # wait for page to load
-    try:
-        WebDriverWait(browser, 20).until(
-            expected_conditions.element_to_be_clickable((By.XPATH,"//ul/following-sibling::div//div[@role='button']"))
-        )
-    except Exception as e:
-        print_v("An exception has occured during page load(4): " + str(type(e)) + ' ' + str(e) )
-
-    lastScrappedComment = 0
-    # loop until all messages are shown
+    comments_found = 0
     while True:
-        comments = comments_box.find_elements_by_xpath("./div/div/div/div/div[4]/ul/li")
-        # comments = comments_box.find_elements_by_tag_name("li")
-        extractContent(comments[lastScrappedComment:])
-        lastScrappedComment = len(comments)
-
-        # click "View more comments" button, if available
-        more_comments_btn = comments_box.find_element_by_xpath("//ul/following-sibling::div//div[@role='button']")
-        visible_messages = more_comments_btn.find_element_by_xpath("./../following-sibling::div").text
-
-        if visible_messages == "":
+        comments = browser.find_elements_by_xpath("//ytd-comment-thread-renderer")
+        browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
+        simulateHumanShort()
+        if comments_found == len(comments):
             break
+        comments_found = len(comments)
 
-        if " of " in visible_messages:
-            parts = visible_messages.split(" of ")
-            if parts[0] == parts[1]:
-                break
-        
-        browser.execute_script("arguments[0].scrollIntoView(true);", more_comments_btn)
-       
-        loaded_messages = len(comments_box.find_elements_by_tag_name("ul"))
-        # more_comments_btn.click()
-        # click element by executing javascript
-        browser.execute_script("arguments[0].click();", more_comments_btn)
 
-        # wait for messages to load
-        while len(comments_box.find_elements_by_tag_name("ul")) == loaded_messages:
-            None
+    for comment in comments:
+        # replies = comment.find_element_by_xpath("//div[@id='replies']//div[@id='expander']")
+        body = comment.find_element_by_xpath(".//div[@id='main']//ytd-expander[@id='expander']")
+        content = body.find_element_by_xpath(".//div[@id='content']")
+        show_more = body.find_element_by_xpath(".//paper-button[@id='more']")
+        if body.find_element_by_xpath(".//paper-button[@id='more']").get_attribute("hidden") == None:
+            browser.execute_script("arguments[0].click();", show_more)
+            simulateHumanMedium()
+
+        print_v(content.text)
+        data += [[content.text, len(content.text), url]]
+        # simulateHumanShort()
+
+    df = pd.DataFrame(data, columns=["raw text", "text_length", "source"])
+    df.to_csv('list.csv', index=False)
 
     # dumpFile(title="after loading", content=browser.find_element_by_tag_name("html"))
     return browser
-
-def extractContent(comments):
-    global data
-
-    for comment in comments:
-        simulateHumanShort()
-        print_v("============================= new message ================================")
-        reactions = 0
-        see_more_btns = comment.find_elements_by_xpath(".//div[@role='button']")
-        for see_more_btn in see_more_btns:
-            print_v(see_more_btn.text)
-            if see_more_btn.text == "See More":
-                # expand message body
-                browser.execute_script("arguments[0].scrollIntoView(true);", see_more_btn)
-                browser.execute_script("arguments[0].click();", see_more_btn)
-                simulateHumanLong()
-
-            if " Repl" in see_more_btn.text:
-                # expand replies
-                # browser.execute_script("arguments[0].scrollIntoView(true);", see_more_btn)
-                # browser.execute_script("arguments[0].click();", see_more_btn)
-                simulateHumanMedium()
-            
-            if see_more_btn.text.isdigit():
-                reactions = see_more_btn.text
-                print_v("Reactions:" + see_more_btn.text)
-
-        print_v(comment.get_attribute("innerText"))
-
-        # save to file every time, not to loose the progress
-        data += [[comment.get_attribute("innerText"),reactions]]
-        df = pd.DataFrame(data, columns=["raw text","reactii"])
-        df.to_csv('list.csv', index=False)
 
 def main():
     url = ""

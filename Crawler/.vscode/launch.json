@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "getcomments.py",
-            "args":["--verbose", "--GUI", "--url=https://www.facebook.com/klausiohannis/photos/pcb.3654493634637861/3654541041299787/"],
+            "args":["--verbose", "--GUI", "--url=https://www.youtube.com/watch?v=064z-JsBv0Q&ab_channel=TVR"],
             "console": "integratedTerminal"
         }
     ]
