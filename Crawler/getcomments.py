@@ -9,6 +9,7 @@ import ssl
 import pickle
 import time
 import random
+import pandas as pd
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -195,9 +196,12 @@ def browseURL(url, user, pwd):
     return browser
 
 def extractContent(comments):
+    global data
+
     for comment in comments:
         simulateHumanShort()
         print_v("============================= new message ================================")
+        reactions = 0
         see_more_btns = comment.find_elements_by_xpath(".//div[@role='button']")
         for see_more_btn in see_more_btns:
             print_v(see_more_btn.text)
@@ -209,14 +213,20 @@ def extractContent(comments):
 
             if " Repl" in see_more_btn.text:
                 # expand replies
-                browser.execute_script("arguments[0].scrollIntoView(true);", see_more_btn)
-                browser.execute_script("arguments[0].click();", see_more_btn)
+                # browser.execute_script("arguments[0].scrollIntoView(true);", see_more_btn)
+                # browser.execute_script("arguments[0].click();", see_more_btn)
                 simulateHumanMedium()
             
             if see_more_btn.text.isdigit():
+                reactions = see_more_btn.text
                 print_v("Reactions:" + see_more_btn.text)
 
         print_v(comment.get_attribute("innerText"))
+
+        # save to file every time, not to loose the progress
+        data += [[comment.get_attribute("innerText"),reactions]]
+        df = pd.DataFrame(data, columns=["raw text","reactii"])
+        df.to_csv('list.csv', index=False)
 
 def main():
     url = ""
@@ -233,7 +243,7 @@ def main():
     
     # # store facebook credentials in pickle file. Do this once, to create the pickle file, then comment the following 3 lines of code
     # fb_credentials = open("../../fb.pickle","wb")
-    # creds = ["your email","your pass"]
+    # creds = ["inti80quila@gmail.com","EcwRJZE2H72rcsuUmJWG"]
     # pickle.dump(creds, fb_credentials)
 
     fb_credentials = open("../../fb.pickle","rb")
@@ -248,6 +258,7 @@ def main():
     browser.quit()
     print_v("======= Script ended =========")
 
+data = []
 
 sPath = ""
 

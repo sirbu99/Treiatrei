@@ -780,3 +780,18 @@ _httpStopRequest@resource://devtools/server/actors/network-monitor/network-obser
 exports.makeInfallible/<@resource://devtools/shared/ThreadSafeDevToolsUtils.js:103:22
 Line: 1086, column: 0
 console.error: ({})
+1614869610654	geckodriver	INFO	Listening on 127.0.0.1:59559
+1614869613957	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Dani\\AppData\\Local\\Temp\\rust_mozprofilezukQJT"
+Can't find symbol 'eglSwapBuffersWithDamageEXT'.
+Can't find symbol 'eglSetDamageRegionKHR'.
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new Error("", "(unknown module)"))
+1614869620834	Marionette	INFO	Listening on port 59567
+1614869621116	Marionette	WARN	TLS certificate errors will be ignored for this session
+Can't find symbol 'eglSwapBuffersWithDamageEXT'.
+Can't find symbol 'eglSetDamageRegionKHR'.
+Can't find symbol 'eglSwapBuffersWithDamageEXT'.
+Can't find symbol 'eglSetDamageRegionKHR'.
+1614869666784	Marionette	INFO	Stopped listening on port 59567
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
