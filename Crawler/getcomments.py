@@ -7,6 +7,8 @@ import io
 import re
 import ssl
 import pickle
+import time
+import random
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -77,7 +79,16 @@ def startFirefox(url):
     
     return browser
 
-
+# add delay to bypass fb activity check
+def simulateHumanShort():
+    time.sleep(random.randint(2,8))
+    
+def simulateHumanMedium():
+    time.sleep(random.randint(6,14))
+    
+def simulateHumanLong():
+    time.sleep(random.randint(15,35))
+    
 def browseURL(url, user, pwd):
     """Browse to Page"""
 
@@ -108,9 +119,11 @@ def browseURL(url, user, pwd):
     # # browser.execute_script("arguments[0].style.display = 'none';", cookie_overlay)
     # cookie_overlay_btn = browser.find_element_by_xpath("//div[@aria-label='Close cookie banner button']")
     # cookie_overlay_btn.click()
-    
+    simulateHumanMedium()
     browser.find_element_by_xpath("//input[@aria-label='Email or Phone']").send_keys(user)
+    simulateHumanShort()
     browser.find_element_by_xpath("//input[@aria-label='Password']").send_keys(pwd)
+    simulateHumanShort()
     browser.find_element_by_xpath("//div[@aria-label='Accessible login button']").click()
 
     # wait for page to load
@@ -123,10 +136,20 @@ def browseURL(url, user, pwd):
 
     comments_box = browser.find_element_by_css_selector("div[role=complementary]")
 
+    # wait for page to load
+    try:
+        WebDriverWait(browser, 20).until(
+            expected_conditions.element_to_be_clickable((By.XPATH,"//ul/preceding-sibling::div//div[@role='button']"))
+        )
+    except Exception as e:
+        print_v("An exception has occured during page load(3): " + str(type(e)) + ' ' + str(e) )
+
     # select all comments
+    simulateHumanMedium()
     relevant_filter = comments_box.find_element_by_xpath("//ul/preceding-sibling::div//div[@role='button']")
     relevant_filter.click()
 
+    simulateHumanShort()
     relevant_filter.find_element_by_xpath("//div[@role='menuitem'][3]").click()
 
     # wait for page to load
@@ -135,13 +158,15 @@ def browseURL(url, user, pwd):
             expected_conditions.element_to_be_clickable((By.XPATH,"//ul/following-sibling::div//div[@role='button']"))
         )
     except Exception as e:
-        print_v("An exception has occured during page load(3): " + str(type(e)) + ' ' + str(e) )
+        print_v("An exception has occured during page load(4): " + str(type(e)) + ' ' + str(e) )
 
+    lastScrappedComment = 0
     # loop until all messages are shown
     while True:
-        # comments = comments_box.find_element_by_xpath("/div/div/div/div[1]/div[4]")
+        comments = comments_box.find_elements_by_xpath("./div/div/div/div/div[4]/ul/li")
         # comments = comments_box.find_elements_by_tag_name("li")
-        # extractContent(comments)
+        extractContent(comments[lastScrappedComment:])
+        lastScrappedComment = len(comments)
 
         # click "View more comments" button, if available
         more_comments_btn = comments_box.find_element_by_xpath("//ul/following-sibling::div//div[@role='button']")
@@ -171,6 +196,26 @@ def browseURL(url, user, pwd):
 
 def extractContent(comments):
     for comment in comments:
+        simulateHumanShort()
+        print_v("============================= new message ================================")
+        see_more_btns = comment.find_elements_by_xpath(".//div[@role='button']")
+        for see_more_btn in see_more_btns:
+            print_v(see_more_btn.text)
+            if see_more_btn.text == "See More":
+                # expand message body
+                browser.execute_script("arguments[0].scrollIntoView(true);", see_more_btn)
+                browser.execute_script("arguments[0].click();", see_more_btn)
+                simulateHumanLong()
+
+            if " Repl" in see_more_btn.text:
+                # expand replies
+                browser.execute_script("arguments[0].scrollIntoView(true);", see_more_btn)
+                browser.execute_script("arguments[0].click();", see_more_btn)
+                simulateHumanMedium()
+            
+            if see_more_btn.text.isdigit():
+                print_v("Reactions:" + see_more_btn.text)
+
         print_v(comment.get_attribute("innerText"))
 
 def main():

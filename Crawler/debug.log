@@ -115,3 +115,43 @@ Traceback (most recent call last):
     raise exception_class(message, screen, stacktrace)
 selenium.common.exceptions.NoSuchElementException: Message: Unable to locate element: //ul/following-sibling::div//div[@role='button']
 
+CRITICAL:root:Message: Unable to locate element: //div[@role='menuitem'][3]
+Traceback (most recent call last):
+  File "getcomments.py", line 212, in <module>
+    main()
+  File "getcomments.py", line 197, in main
+    browser =  browseURL(url, user, pwd)
+  File "getcomments.py", line 130, in browseURL
+    relevant_filter.find_element_by_xpath("//div[@role='menuitem'][3]").click()
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webelement.py", line 351, in find_element_by_xpath
+    return self.find_element(by=By.XPATH, value=xpath)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webelement.py", line 659, in find_element
+    {"using": by, "value": value})['value']
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webelement.py", line 633, in _execute
+    return self._parent.execute(command, params)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 321, in execute
+    self.error_handler.check_response(response)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\errorhandler.py", line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: Unable to locate element: //div[@role='menuitem'][3]
+
+CRITICAL:root:Message: Unable to locate element: //div[@role='menuitem'][3]
+Traceback (most recent call last):
+  File "getcomments.py", line 212, in <module>
+    main()
+  File "getcomments.py", line 197, in main
+    browser =  browseURL(url, user, pwd)
+  File "getcomments.py", line 130, in browseURL
+    relevant_filter.find_element_by_xpath("//div[@role='menuitem'][3]").click()
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webelement.py", line 351, in find_element_by_xpath
+    return self.find_element(by=By.XPATH, value=xpath)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webelement.py", line 659, in find_element
+    {"using": by, "value": value})['value']
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webelement.py", line 633, in _execute
+    return self._parent.execute(command, params)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 321, in execute
+    self.error_handler.check_response(response)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\errorhandler.py", line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: Unable to locate element: //div[@role='menuitem'][3]
+
