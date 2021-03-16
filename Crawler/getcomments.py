@@ -114,14 +114,17 @@ def browseURL(url, user, pwd):
     browser.execute_script("arguments[0].click();", no_thanks_btn)
 
     # manually agree with terms
-
+    
     # wait for page to load
     try:
         WebDriverWait(browser, 40).until(
-            expected_conditions.element_to_be_clickable((By.CSS_SELECTOR,"#info-contents"))
+            expected_conditions.invisibility_of_element((By.XPATH,"//tp-yt-paper-dialog[@id='dialog']"))
         )
     except Exception as e:
         print_v("An exception has occured during page load(2): " + str(type(e)) + ' ' + str(e) )
+
+    comment = browser.find_element_by_xpath("//div[@id='meta']")
+    browser.execute_script("arguments[0].scrollIntoView(true);", comment)
 
     comments_found = 0
     while True:

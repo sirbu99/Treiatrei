@@ -8,8 +8,7 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "getcomments.py",
-            "args":["--verbose", "--GUI", "--url=https://www.youtube.com/watch?v=aYpUCWFD5L4"],
+            "program": "${file}",
             "console": "integratedTerminal"
         }
     ]

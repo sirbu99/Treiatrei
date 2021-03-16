@@ -227,3 +227,93 @@ Traceback (most recent call last):
   File "getcomments.py", line 129, in browseURL
     browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
 IndexError: list index out of range
+CRITICAL:root:list index out of range
+Traceback (most recent call last):
+  File "getcomments.py", line 192, in <module>
+    main()
+  File "getcomments.py", line 176, in main
+    browser =  browseURL(url, user, pwd)
+  File "getcomments.py", line 129, in browseURL
+    browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
+IndexError: list index out of range
+CRITICAL:root:list index out of range
+Traceback (most recent call last):
+  File "getcomments.py", line 192, in <module>
+    main()
+  File "getcomments.py", line 176, in main
+    browser =  browseURL(url, user, pwd)
+  File "getcomments.py", line 129, in browseURL
+    browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
+IndexError: list index out of range
+CRITICAL:root:list index out of range
+Traceback (most recent call last):
+  File "getcomments.py", line 192, in <module>
+    main()
+  File "getcomments.py", line 176, in main
+    browser =  browseURL(url, user, pwd)
+  File "getcomments.py", line 129, in browseURL
+    browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
+IndexError: list index out of range
+CRITICAL:root:list index out of range
+Traceback (most recent call last):
+  File "getcomments.py", line 192, in <module>
+    main()
+  File "getcomments.py", line 176, in main
+    browser =  browseURL(url, user, pwd)
+  File "getcomments.py", line 129, in browseURL
+    browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
+IndexError: list index out of range
+CRITICAL:root:Message: Unable to locate element: //ytd-comment-thread-renderer
+Traceback (most recent call last):
+  File "getcomments.py", line 195, in <module>
+    main()
+  File "getcomments.py", line 179, in main
+    browser =  browseURL(url, user, pwd)
+  File "getcomments.py", line 126, in browseURL
+    comment = browser.find_element_by_xpath("//ytd-comment-thread-renderer")
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 394, in find_element_by_xpath
+    return self.find_element(by=By.XPATH, value=xpath)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 978, in find_element
+    'value': value})['value']
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 321, in execute
+    self.error_handler.check_response(response)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\errorhandler.py", line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: Unable to locate element: //ytd-comment-thread-renderer
+
+CRITICAL:root:list index out of range
+Traceback (most recent call last):
+  File "getcomments.py", line 195, in <module>
+    main()
+  File "getcomments.py", line 179, in main
+    browser =  browseURL(url, user, pwd)
+  File "getcomments.py", line 132, in browseURL
+    browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
+IndexError: list index out of range
+CRITICAL:root:list index out of range
+Traceback (most recent call last):
+  File "getcomments.py", line 195, in <module>
+    main()
+  File "getcomments.py", line 179, in main
+    browser =  browseURL(url, user, pwd)
+  File "getcomments.py", line 132, in browseURL
+    browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
+IndexError: list index out of range
+CRITICAL:root:list index out of range
+Traceback (most recent call last):
+  File "getcomments.py", line 195, in <module>
+    main()
+  File "getcomments.py", line 179, in main
+    browser =  browseURL(url, user, pwd)
+  File "getcomments.py", line 132, in browseURL
+    browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
+IndexError: list index out of range
+CRITICAL:root:list index out of range
+Traceback (most recent call last):
+  File "getcomments.py", line 203, in <module>
+    main()
+  File "getcomments.py", line 187, in main
+    browser =  browseURL(url, user, pwd)
+  File "getcomments.py", line 140, in browseURL
+    browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
+IndexError: list index out of range
