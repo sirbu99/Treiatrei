@@ -1,27 +1,32 @@
+"""
+Input: corpus-lemmatized.txt, optional corpus-words-list.txt from lematizare.py
+"""
+
 # cleaning texts 
 import pandas as pd 
 import re 
 import nltk 
+import numpy as np
 from nltk.corpus import stopwords 
 from nltk.stem.porter import PorterStemmer 
 from sklearn.feature_extraction.text import CountVectorizer 
 
 # read files
-positives = []
-f_p = open("nonoffensive.txt","r")
+dataset = []
+f_p = open("corpus-lemmatized.txt","r")
 for line in f_p.readlines():
-	positives.append([line[2:],line[0]])
+	dataset.append([line[2:],line[0]])
 f_p.close()
 
-negatives = []
-f_n = open("offensive.txt","r")
+word_count = 4000
+words = []
+f_n = open("corpus-words-list.txt","r")
+word_count = int(f_n.readline())
 for line in f_n.readlines():
-	negatives.append([line[2:],line[0]])
+	words.append([line[2:],line[0]])
 f_n.close()
 
 
-dataset = positives + negatives
-			
 dataset = pd.DataFrame(dataset) 
 dataset.columns = ["Text", "Reviews"] 
 
@@ -33,15 +38,18 @@ for i in range(0, len(dataset)):
 	text = re.sub('[^a-zA-Z\s]', '', dataset['Text'][i]) 
 	text = text.lower() 
 	text = text.split() 
-	ps = PorterStemmer() 
 	text = ' '.join(text) 
 	corpus.append(text) 
 
 # creating bag of words model 
-cv = CountVectorizer(max_features = 1500) 
+cv = CountVectorizer(max_features = word_count) 
 
 X = cv.fit_transform(corpus).toarray() 
 y = dataset.iloc[:, 1].values 
+y_T = y.reshape(len(y),1)
+
+# add prediction as feature
+X = np.append(X, y_T, axis=1)
 
 # splitting the data set into training set and test set 
 from sklearn.model_selection import train_test_split 
