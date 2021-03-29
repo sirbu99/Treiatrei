@@ -13,9 +13,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 nltk.download('stopwords') 
 
-# read files
-dataset = [[]]
-list_index=0
+# read files and split all messages into smaller groups of mesages
+dataset = [[]] 
+list_index=0 
 line_index=0
 f_p = open("16k-lemmatized.txt","r")
 for line in f_p.readlines():
@@ -28,7 +28,7 @@ for line in f_p.readlines():
 f_p.close()
 
 
-def clasificator(dataset):
+def dataset_filter(dataset):
 
 	word_count = 4000
 	words = []
@@ -62,12 +62,13 @@ def clasificator(dataset):
 	X = np.append(X, y_T, axis=1)
 	return X,y
 
+#trecem fiecare lista de mesaje prin fct dataset_filter-> returneaza X,y folositi in antrenarea modelului
 X=[]
 y=[]
 for i in range(len(dataset)):
-	X1,y1=clasificator(dataset[i])
-	X.append(X1)
-	y.append(y1)
+	temp_X,temp_y=dataset_filter(dataset[i])
+	X.append(temp_X)
+	y.append(temp_y)
 
 
 # fitting naive bayes to the training set 
@@ -79,7 +80,7 @@ classifier = GaussianNB()
 # splitting the data set into training set and test set 
 from sklearn.model_selection import train_test_split 
 
-cm1=[]
+conf_matrix=[]
 total_test=0
 total_training=0
 for i in range(len(X)):
@@ -95,18 +96,19 @@ for i in range(len(X)):
 	
 	# making the confusion matrix 
 	cm = confusion_matrix(y_test, y_pred)
-	if len(cm1)==0:
-		cm1=cm
+	if len(conf_matrix)==0:
+		conf_matrix=cm
 	else:
-		for i in range(len(cm1)):
-			for j in range(len(cm1)):
-				cm1[i][j]+=cm[i][j]
+		for i in range(len(conf_matrix)):
+			for j in range(len(conf_matrix)):
+				conf_matrix[i][j]+=cm[i][j]
 
-print(cm1,total_test,total_training)
+print(conf_matrix,total_test,total_training)
 
-prec=cm1[0][0]/(cm1[0][0]+cm1[1][0])
+# precision= TP / TP + FP
+prec=conf_matrix[0][0]/(conf_matrix[0][0]+conf_matrix[1][0])
 print(prec)
 
-#TP+FN
-recall=cm1[0][0]/(cm1[0][0]+cm1[0][1])
+# recall = TP / TP + FN
+recall=conf_matrix[0][0]/(conf_matrix[0][0]+conf_matrix[0][1])
 print(recall)
