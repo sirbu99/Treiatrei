@@ -24,7 +24,12 @@ for line in f_n.readlines():
 f_n.close()
 
 
-dataset = positives + negatives
+#dataset = positives + negatives
+dataset=[]
+file1=open("training_data.txt","r")
+for line in file1.readlines():
+	dataset.append([line[2:],line[0]])
+file1.close()
 			
 dataset = pd.DataFrame(dataset) 
 dataset.columns = ["Text", "Reviews"] 
@@ -48,12 +53,12 @@ for i in range(0, len(dataset)):
 		text = ' '.join(text) 
 		corpus.append(text) 
 
-file = open("corpus-lemmatized.txt", "w", encoding="utf-8")
+file = open("16k-lemmatized.txt", "w", encoding="utf-8")
 for i,text in enumerate(corpus):
     file.write(dataset.iloc[i, 1] + ',' + text + '\n')
 file.close()
 
-file = open("corpus-words-list.txt", "w", encoding="utf-8")
+file = open("16k-words-list.txt", "w", encoding="utf-8")
 file.write(str(len(all_words)) + '\n')
 for text in all_words:
     file.write(text + '\n')
