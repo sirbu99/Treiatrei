@@ -41,7 +41,7 @@ def dumpFile(title, content):
 
     # https://regex101.com/r/VjbmPV/2
     contentClean = content.get_attribute("outerHTML")
-    pattern = re.compile("<script[\s\S]+?\/script>")
+    pattern = re.compile(r"<script[\s\S]+?\/script>")
     subst = u""
     contentClean = re.sub(pattern, subst, contentClean)
 
@@ -58,12 +58,12 @@ def startFirefox(url):
     options = webdriver.FirefoxOptions()
     if not "--GUI" in sys.argv: options.add_argument("--headless")
     if platform.system() == "Windows":
-        browser = webdriver.Firefox(options=options, executable_path='./drivers/win/geckodriver')
+        browser = webdriver.Firefox(options=options, executable_path='./crawlers/Crawler - youtube/drivers/win/geckodriver')
     if platform.system() == "Darwin":
-        browser = webdriver.Firefox(options=options, executable_path='./drivers/mac/geckodriver')
+        browser = webdriver.Firefox(options=options, executable_path='./crawlers/Crawler - youtube/drivers/mac/geckodriver')
     if platform.system() == "Linux":
         firefox_binary = FirefoxBinary('/opt/firefox/firefox')
-        browser = webdriver.Firefox(firefox_binary=firefox_binary, options=options, executable_path='./drivers/linux/geckodriver')
+        browser = webdriver.Firefox(firefox_binary=firefox_binary, options=options, executable_path='./crawlers/Crawler - youtube/drivers/linux/geckodriver')
 
     try:
         # open dashboard
@@ -150,7 +150,7 @@ def browseURL(url, user, pwd):
         # simulateHumanShort()
 
     df = pd.DataFrame(data, columns=["raw text", "text_length", "source"])
-    df.to_csv('list.csv', index=False)
+    df.to_csv('data/list.csv', index=False)
 
     # dumpFile(title="after loading", content=browser.find_element_by_tag_name("html"))
     return browser
@@ -169,12 +169,9 @@ def main():
     global msg
     
     # # store facebook credentials in pickle file. Do this once, to create the pickle file, then comment the following 3 lines of code
-    # fb_credentials = open("../../fb.pickle","wb")
-    # creds = ["inti80quila@gmail.com","EcwRJZE2H72rcsuUmJWG"]
-    # pickle.dump(creds, fb_credentials)
 
-    fb_credentials = open("../../fb.pickle","rb")
-    user, pwd = pickle.load(fb_credentials)
+    # fb_credentials = open("../..//crawlers/Crawler - youtube/fb.pickle","rb")
+    user, pwd = None, None #pickle.load(fb_credentials)
 
     browser =  browseURL(url, user, pwd)
     if browser == None:

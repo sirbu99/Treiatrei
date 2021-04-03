@@ -12,19 +12,24 @@ racai_url = 'http://relate.racai.ro:5000/process'
 
 # read files
 positives = []
-f_p = open("nonoffensive.txt","r")
+f_p = open("data/nonoffensive.txt","r")
 for line in f_p.readlines():
 	positives.append([line[2:],line[0]])
 f_p.close()
 
 negatives = []
-f_n = open("offensive.txt","r")
+f_n = open("data/offensive.txt","r")
 for line in f_n.readlines():
 	negatives.append([line[2:],line[0]])
 f_n.close()
 
 
-dataset = positives + negatives
+#dataset = positives + negatives
+dataset=[]
+file1=open("data/training_data.txt","r")
+for line in file1.readlines():
+	dataset.append([line[2:],line[0]])
+file1.close()
 			
 dataset = pd.DataFrame(dataset) 
 dataset.columns = ["Text", "Reviews"] 
@@ -48,12 +53,12 @@ for i in range(0, len(dataset)):
 		text = ' '.join(text) 
 		corpus.append(text) 
 
-file = open("corpus-lemmatized.txt", "w", encoding="utf-8")
+file = open("data/16k-lemmatized.txt", "w", encoding="utf-8")
 for i,text in enumerate(corpus):
     file.write(dataset.iloc[i, 1] + ',' + text + '\n')
 file.close()
 
-file = open("corpus-words-list.txt", "w", encoding="utf-8")
+file = open("data/16k-words-list.txt", "w", encoding="utf-8")
 file.write(str(len(all_words)) + '\n')
 for text in all_words:
     file.write(text + '\n')
