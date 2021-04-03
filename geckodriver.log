@@ -1,0 +1,18 @@
+1617456278786	geckodriver	INFO	Listening on 127.0.0.1:60329
+1617456281787	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Dani\\AppData\\Local\\Temp\\rust_mozprofiletCHBHb"
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new Error("", "(unknown module)"))
+1617456287103	Marionette	INFO	Listening on port 60338
+1617456287234	Marionette	WARN	TLS certificate errors will be ignored for this session
+1617456294951	Marionette	WARN	Ignoring event 'pageshow' because document has an invalid readyState of 'uninitialized'.
+1617456299338	Marionette	INFO	Stopped listening on port 60338
+[Parent 20124, IPC I/O Parent] WARNING: file /builds/worker/checkouts/gecko/ipc/chromium/src/base/process_util_win.cc:167
+[Parent 20124, IPC I/O Parent] WARNING: file /builds/worker/checkouts/gecko/ipc/chromium/src/base/process_util_win.cc:167
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+1617456330039	geckodriver	INFO	Listening on 127.0.0.1:60432
+1617456333091	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Dani\\AppData\\Local\\Temp\\rust_mozprofile6Tv046"
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new Error("", "(unknown module)"))
+1617456337270	Marionette	INFO	Listening on port 60451
+1617456337444	Marionette	WARN	TLS certificate errors will be ignored for this session
+1617456347826	Marionette	WARN	Ignoring event 'pageshow' because document has an invalid readyState of 'uninitialized'.

@@ -1,0 +1,16 @@
+CRITICAL:root:[Errno 2] No such file or directory: '../../fb.pickle'
+Traceback (most recent call last):
+  File "./crawlers/Crawler - youtube/getcomments.py", line 195, in <module>
+    main()
+  File "./crawlers/Crawler - youtube/getcomments.py", line 176, in main
+    fb_credentials = open("../../fb.pickle","rb")
+FileNotFoundError: [Errno 2] No such file or directory: '../../fb.pickle'
+CRITICAL:root:list index out of range
+Traceback (most recent call last):
+  File "./crawlers/Crawler - youtube/getcomments.py", line 192, in <module>
+    main()
+  File "./crawlers/Crawler - youtube/getcomments.py", line 176, in main
+    browser =  browseURL(url, user, pwd)
+  File "./crawlers/Crawler - youtube/getcomments.py", line 132, in browseURL
+    browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
+IndexError: list index out of range
