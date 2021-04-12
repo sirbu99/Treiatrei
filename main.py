@@ -6,7 +6,9 @@ from classifiers.BayesNaiv import Classifier_NB
 from classifiers.Random import FlipCoin
 from preprocessors.smallgroups import SmallGroups
 from sklearn.model_selection import train_test_split 
-from sklearn.metrics import confusion_matrix 
+from sklearn.metrics import confusion_matrix
+#Set to logging to 0 if u dont need logging.
+LOGGING=1
 
 def precision_recall(classifier, preprocessor):
 	X, y = preprocessor.get_model()
@@ -46,7 +48,6 @@ def precision_recall(classifier, preprocessor):
 	# print(recall)
 
 	return prec, recall
-
 classifiers = []
 preprocessors = []
 
@@ -63,6 +64,10 @@ for classifier in classifiers:
 		prec, recall = precision_recall(classifier, preprocessor)
 		results["[" + classifier.name + "+" + preprocessor.name +"]"]["precision"] = prec
 		results["[" + classifier.name + "+" + preprocessor.name + "]"]["recall"] = recall
+		if LOGGING:
+			with open('logs/'+classifier.name+'.log', 'a') as f:#logging purposes only
+				f.write(str(prec)+'\t'+str(recall))
+				f.write('\n')
 
 print(results)
 
