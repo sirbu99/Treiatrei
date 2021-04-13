@@ -7,19 +7,28 @@ if __name__ != '__main__':
 	import numpy as np
 	from nltk.corpus import stopwords 
 	from nltk.stem.porter import PorterStemmer 
-	from sklearn.feature_extraction.text import CountVectorizer 
+	from sklearn.feature_extraction.text import CountVectorizer
+	from os import path
 
 
 	class SmallGroups(IPreprocessor):
-		def __init__(self, name):
+		def __init__(self, name, corpus_path,words_list_path):
 			self.name = name
 			# nltk.download('stopwords') 
+
+			#check if path are corect and are files
+			from os import path
+			if not (path.exists(corpus_path) and path.isfile(corpus_path) and path.exists(words_list_path) and path.isfile(words_list_path)):
+				raise Exception("Wrong paths:\n"+corpus_path+"\n"+words_list_path)
+			else:
+				self.corpus_path=corpus_path
+				self.words_list_path=words_list_path
 
 			# read files and split all messages into smaller groups of mesages
 			dataset = [[]] 
 			list_index=0 
 			line_index=0
-			f_p = open("data/16k-lemmatized.txt", "r", encoding='utf-8')
+			f_p = open(self.corpus_path, "r", encoding='utf-8')
 			for line in f_p.readlines():
 				if line_index == 3500:
 					line_index=0
@@ -45,7 +54,7 @@ if __name__ != '__main__':
 
 			word_count = 4000
 			words = []
-			f_n = open("data/16k-words-list.txt", "r", encoding='utf-8')
+			f_n = open(self.words_list_path, "r", encoding='utf-8')
 			word_count = int(f_n.readline())
 			for line in f_n.readlines():
 				words.append([line[2:],line[0]])
