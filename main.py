@@ -2,6 +2,7 @@
 Main module
 """
 import pandas as pd
+
 from classifiers.BayesNaiv import Classifier_NB
 from classifiers.Random import FlipCoin
 from preprocessors.smallgroups import SmallGroups
@@ -136,5 +137,8 @@ for classifier in classifiers:
             with open('logs/' + classifier.name + '.log', 'a') as f:  # logging purposes only
                 f.write(str(prec) + '\t' + str(recall))
                 f.write('\n')
-
+with open("./data/stats.txt", 'a') as f:
+    f.write(
+        results.to_string()
+    )
 print(results)

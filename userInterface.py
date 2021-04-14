@@ -1,7 +1,5 @@
 from tkinter import *
 from tkinter import filedialog, messagebox
-import tkinter as tk
-
 
 def openFile():
     clearText()
