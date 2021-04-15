@@ -69,20 +69,48 @@ def precision(classifier, preprocessor):
 
 
 def precision_recall(classifier, preprocessor):
-    X, y = preprocessor.get_model()
+    _DEBUG = False
+    X, y = preprocessor.get_model(_DEBUG)
 
     # splitting the data set into training set and test set
     conf_matrix = []
     total_test = 0
     total_training = 0
     for i in range(len(X)):
-        X_train, X_test, y_train, y_test = train_test_split(
-            X[i], y[i], test_size=0.25, random_state=0)
+        if _DEBUG:
+            X[i] = [(X[i][_], preprocessor.pretty_hot_vector[i][_], preprocessor.dataset[i][_]) for _ in range(len(X[i]))]
 
+        X_train, X_test, y_train, y_test = train_test_split(X[i], y[i], test_size=0.25)
+
+        # DEBUG: am verificat ca datele de la model sunt amestecate de fiecare data cu test_train_split!
+        # XDEBUG_train, XDEBUG_test, yDEBUG_train, yDEBUG_test = train_test_split(preprocessor.pretty_hot_vector[i], y[i], test_size=0.25)
+        _DEBUG_show_rows = 5
+        if _DEBUG:
+            XDEBUG_train = [_[1] for _ in X_train]
+            XDEBUG_train_review = [_[2] for _ in X_train]
+            X_train = [_[0] for _ in X_train]
+            XDEBUG_test = [_[1] for _ in X_test]
+            XDEBUG_test_review = [_[2] for _ in X_test]
+            X_test = [_[0] for _ in X_test]
+
+            print("\n       First %g rows in train set:" %(_DEBUG_show_rows))
+            print(XDEBUG_train_review[:_DEBUG_show_rows])
+            print(XDEBUG_train[:_DEBUG_show_rows])
+
+            print("\n       First %g rows in test set:" %(_DEBUG_show_rows))
+            print(XDEBUG_test_review[:_DEBUG_show_rows])
+            print(XDEBUG_test[:_DEBUG_show_rows])
+
+        warnings.filterwarnings("ignore", category=FutureWarning)
         classifier.fit(X_train, y_train)
 
         # predicting the test set results
         y_pred = classifier.predict(X_test)
+
+        if _DEBUG:
+            print("\n       First %g rows in prediction:" %(_DEBUG_show_rows))
+            print(y_pred[:_DEBUG_show_rows])
+
         total_test += len(X_test)
         total_training += len(X_train)
         # print(X_test)
@@ -125,7 +153,7 @@ results = pd.DataFrame(columns=["[" + n1.name + '+' + n2.name + "]" for n1 in cl
                        index=["precision", "recall"])
 for classifier in classifiers:
     for preprocessor in preprocessors:
-        print("Processing " + classifier.name + "+" + preprocessor.name)
+        print("\n=========================== Processing " + classifier.name + "+" + preprocessor.name + " =====================================")
         prec, recall = 0, 0
         if "_" in classifier.name:
             prec, recall = precision(classifier, preprocessor)
