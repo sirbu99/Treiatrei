@@ -38,13 +38,18 @@ if __name__ != '__main__':
 				line_index+=1
 			f_p.close()
 
+			most_used_words = open('./data/bad_words.txt').readlines()
+			self.bad_words = [_.lower().replace('\n','') for _ in most_used_words]
+
 			#trecem fiecare lista de mesaje prin fct dataset_filter-> returneaza X,y folositi in antrenarea modelului
 			self.X=[]
 			self.y=[]
 			for i in range(len(self.dataset)):
+				# print("Dataset Filter " + str(i))
 				temp_X,temp_y=self.dataset_filter(self.dataset[i])
 				self.X.append(temp_X)
 				self.y.append(temp_y)
+
 
 
 		def get_model(self, DEBUG_MODE = False):
@@ -73,11 +78,18 @@ if __name__ != '__main__':
 			subset.columns = ["Text", "Reviews"] 
 
 			corpus = [] 
-
+			has_bad_words = subset.iloc[:, 1].values .copy()
 			for i in range(0, len(subset)): 
 				text = re.sub(r'[^a-zA-Z\s]', '', subset['Text'][i]) 
 				text = text.lower() 
 				text = text.split() 
+
+				has_bad_words[i] = '0'
+				for wrd in text:
+					if wrd in self.bad_words:
+						has_bad_words[i] = '1'
+						break
+
 				text = ' '.join(text) 
 				corpus.append(text) 
 
@@ -86,9 +98,14 @@ if __name__ != '__main__':
 
 			X = cv.fit_transform(corpus).toarray() 
 			y = subset.iloc[:, 1].values 
-			y_T = y.reshape(len(y),1)
+
+			# add bad words presence as feature
+			has_bad_words_T = has_bad_words.reshape(len(has_bad_words), 1)
+			X = np.append(X, has_bad_words_T, axis=1)
 
 			# add prediction as feature
+			y_T = y.reshape(len(y),1)
 			X = np.append(X, y_T, axis=1)
+
 			return X,y
 
