@@ -12,7 +12,7 @@ import numpy as np
 import warnings
 
 # Set to logging to 0 if u dont need logging.
-LOGGING = 0
+LOGGING = 1
 
 
 def precision(classifier, preprocessor):
@@ -162,7 +162,7 @@ for classifier in classifiers:
         results["[" + classifier.name + "+" + preprocessor.name + "]"]["precision"] = prec
         results["[" + classifier.name + "+" + preprocessor.name + "]"]["recall"] = recall
         if LOGGING:
-            with open('logs/' + classifier.name + '.log', 'a') as f:  # logging purposes only
+            with open('logs/' + classifier.name + preprocessor.name + '.log', 'a') as f:  # logging purposes only
                 f.write(str(prec) + '\t' + str(recall))
                 f.write('\n')
 with open("./data/stats.txt", 'a') as f:

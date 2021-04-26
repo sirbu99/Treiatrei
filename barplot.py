@@ -1,53 +1,79 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
-#create datasets
-entriesBayes=[]
-entriesRandom=[]
+def getList(dict):
+    return dict.keys()
 
+def validLine(line):
+    if line[0] != '#':
+        return True
+    return False
+
+names=[]
+d={}
+
+for filename in os.listdir('logs'):
+    if filename.endswith(".log"):
+        d[filename[:-4]]=None
+#file format:
 #precision	recall
-with open('logs/BayNv.log', 'r') as f:
-    lines=f.readlines()
-for line in lines:
-    if line[0] == '#':
-        pass
+for filename in os.listdir('logs'):
+    if filename.endswith(".log"):
+        with open('logs/'+filename, 'r') as f:
+            #work with the current file, make the average then put a tuple it in our dict
+            name=filename[:-4]
+            lines=f.readlines()
+            values=[]
+            for line in lines:
+                if validLine(line):
+                    values+=line.split(sep="\t")
+                else:
+                    pass
+            current="precision"
+            precision=[]
+            precisionc=0
+            recall=[]
+            recallc=0
+            for i in values:
+                if current=="precision":
+                    precisionc+=1
+                    precision.append(float(i))
+                    current="recall"
+                if current=="recall":
+                    recallc+=1
+                    recall.append(float(i))
+                    current="precision"
+            t=[]
+            t=[sum(precision)/precisionc , sum(recall)/recallc]
+            d[name]=t
+newd={k: v for k, v in d.items() if v is not None}
+names=getList(d)
+bars=[]
+for key in newd:
+    bars.append(key[:-6]+" precision")
+    bars.append(key[:-6]+ " recall")
+print(bars)
+y_pos = np.arange(len(bars))
+colors=[]
+height=[]
+fig, ax = plt.subplots()
+for key in newd:
+    t=newd[key]
+    height.append(t[0])
+    height.append(t[1])
+    if t[0]>0.85:
+        colors.append("green")
     else:
-        values=line.split(sep="\t")
-        entriesBayes.append(values)
-
-with open('logs/Flip.log', 'r') as f:
-    lines=f.readlines()
-for line in lines:
-    if line[0] == '#':
-        pass
+        colors.append("red")
+    if t[1]>0.85:
+        colors.append("green")
     else:
-        values=line.split(sep="\t")
-        entriesRandom.append(values)
-
-#we do the average
-precisionBayes=0
-precisonRand=0
-recallBayes=0
-recallRand=0
-for i in range(len(entriesBayes)):
-    precisionBayes+=float(entriesBayes[i][0])
-    precisonRand+=float(entriesRandom[i][0])
-    recallBayes+=float(entriesBayes[i][1])
-    recallRand+=float(entriesRandom[i][1])
-precisionBayes=precisionBayes/len(entriesBayes)
-precisonRand=precisonRand/len(entriesRandom)
-recallBayes=recallBayes/len(entriesBayes)
-recallRand=recallRand/len(entriesRandom)
-
-#creating final dataset
-height=[precisionBayes,recallBayes,precisonRand,recallRand]
-
-#creating bars
-bars=["BN Avg Precision", "BN Avg Recall", "CF Avg Precision","CF Avg recall"]
-x_pos = np.arange(len(bars))
-plt.bar(x_pos, height, color=['green','green','red','red'])
-# Create names on the x-axis
-plt.xticks(x_pos, bars)
-# Show graph
+        colors.append("red")
+ax.barh(y_pos, height, color=colors, align='center')
+ax.set_yticks(y_pos)
+ax.set_yticklabels(bars)
+ax.invert_yaxis()  # labels read top-to-bottom
+fig.subplots_adjust(left=0.5)
+ax.set_xlabel('Performance')
 plt.show()
-    
