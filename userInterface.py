@@ -1,6 +1,14 @@
 from tkinter import *
 from tkinter import filedialog, messagebox
 
+import numpy as np
+import pandas as pd
+from classifiers.BayesNaiv import Classifier_NB
+from main import classify_message
+from preprocessors.smallgroups import SmallGroups
+from preprocessors.Preprocesare_text import script_preprocess
+
+
 def openFile():
     clearText()
     tf = filedialog.askopenfilename(
@@ -31,8 +39,17 @@ def showStats():
 
 
 def runClassifier():
-    messagebox.showinfo('Result', "The message is offensive!")
+    preprocessor = SmallGroups("LemGroups", "data/16k-lemmatized.txt", "data/16k-words-list.txt")
+    # messagebox.showinfo('Result', "The message is offensive!")
     messageToBeClassified = txtarea.get("1.0", "end")
+
+    script_preprocess.correctedLine(messageToBeClassified)
+    subset = pd.DataFrame([[messageToBeClassified, '0']])
+    X, y = preprocessor.dataset_filter(subset)
+    print("X = ", X)
+
+    response = classify_message(X, Classifier_NB("BayNv"), preprocessor)
+    print(response)
 
 
 ws = Tk()
