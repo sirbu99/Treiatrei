@@ -91,7 +91,7 @@ if __name__ != '__main__':
 
             X = cv.fit_transform(corpus).toarray()
             self.feature_names = cv.get_feature_names()
-            
+
             # print(X)
             y = subset.iloc[:, 1].values
 
@@ -99,9 +99,9 @@ if __name__ != '__main__':
             has_bad_words_T = has_bad_words.reshape(len(has_bad_words), 1)
             X = np.append(X, has_bad_words_T, axis=1)
 
-            # add prediction as feature
-            y_T = y.reshape(len(y), 1)
-            X = np.append(X, y_T, axis=1)
+            # # add prediction as feature
+            # y_T = y.reshape(len(y), 1)
+            # X = np.append(X, y_T, axis=1)
 
             return X, y
 

@@ -72,7 +72,7 @@ def runClassifier():
 
     # add columns
     X = np.append(X, np.array(['1' if has_bad_words else '0' for _ in X]).reshape(len(X), 1), axis=1)
-    X = np.append(X, np.array(['0' for _ in X]).reshape(len(X), 1), axis=1)
+    # X = np.append(X, np.array(['2' for _ in X]).reshape(len(X), 1), axis=1)
 
     pred = model['classifier'].predict(X)
 
