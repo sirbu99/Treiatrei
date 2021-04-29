@@ -12,6 +12,13 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Interfata",
+            "type": "python",
+            "request": "launch",
+            "program": "userInterface.py",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Crawler YT",
             "type": "python",
             "request": "launch",

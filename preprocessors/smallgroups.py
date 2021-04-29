@@ -90,6 +90,8 @@ if __name__ != '__main__':
             cv = CountVectorizer(max_features=word_count)
 
             X = cv.fit_transform(corpus).toarray()
+            self.feature_names = cv.get_feature_names()
+            
             # print(X)
             y = subset.iloc[:, 1].values
 

@@ -2,6 +2,8 @@
 Main module
 """
 import pandas as pd
+import pickle
+import os
 
 from classifiers.BayesNaiv import Classifier_NB
 from classifiers.Random import FlipCoin
@@ -53,6 +55,11 @@ def precision(classifier, preprocessor):
         if needed != 's':
             # train the model
             classifier.fit(X_train, y_train)
+
+            # store model
+            if not os.path.exists('./data/models'):
+                os.mkdir('./data/models')
+            pickle.dump({'classifier': classifier, 'feature names': preprocessor.feature_names, 'predict req shape': X_test.shape}, open('./data/models/' + classifier.name + ' ' + preprocessor.name + '.sav', 'wb'))
 
             # get the targeted class of messages from the test set
             last = len(X_test[0]) - 1
@@ -120,6 +127,11 @@ def precision_recall(classifier, preprocessor):
         warnings.filterwarnings("ignore", category=FutureWarning)
         classifier.fit(X_train, y_train)
 
+        # store model
+        if not os.path.exists('./data/models'):
+            os.mkdir('./data/models')
+        pickle.dump({'classifier': classifier, 'feature names': preprocessor.feature_names, 'predict req shape': X_test.shape}, open('./data/models/' + classifier.name + ' ' + preprocessor.name + '.sav', 'wb'))
+
         # predicting the test set results
         y_pred = classifier.predict(X_test)
         print(X_test[0],len(X_test[0]))
@@ -164,6 +176,7 @@ def run():
     classifiers += [FlipCoin("Flip")]
     classifiers += [Classifier_NB("BayNv_offensive")]
     classifiers += [Classifier_NB("BayNv_non-offensive")]
+
     preprocessors += [SmallGroups("LemGroups", "data/16k-lemmatized.txt", "data/16k-words-list.txt")]
     preprocessors += [SmallGroups("UnprocessedGroups", "data/16k_neprocesat.txt", "data/16k_neprocesat_words_list.txt")]
 

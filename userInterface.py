@@ -7,7 +7,9 @@ from classifiers.BayesNaiv import Classifier_NB
 from main import classify_message
 from preprocessors.smallgroups import SmallGroups
 from preprocessors.Preprocesare_text import script_preprocess
-
+import pickle
+import os
+from sklearn.feature_extraction.text import CountVectorizer
 
 def openFile():
     clearText()
@@ -39,17 +41,47 @@ def showStats():
 
 
 def runClassifier():
-    preprocessor = SmallGroups("LemGroups", "data/16k-lemmatized.txt", "data/16k-words-list.txt")
+    model = pickle.load(open('./data/models/BayNv LemGroups.sav', 'rb'))
+
+    # preprocessor = SmallGroups("LemGroups", "data/16k-lemmatized.txt", "data/16k-words-list.txt")
     # messagebox.showinfo('Result', "The message is offensive!")
     messageToBeClassified = txtarea.get("1.0", "end")
 
-    script_preprocess.correctedLine(messageToBeClassified)
-    subset = pd.DataFrame([[messageToBeClassified, '0']])
-    X, y = preprocessor.dataset_filter(subset)
-    print("X = ", X)
+    preprocessed_message = re.sub(r'[^a-zA-Z\s]', '', script_preprocess.correctedLine(messageToBeClassified))
+    preprocessed_message = preprocessed_message.lower()
+    preprocessed_message = preprocessed_message.split()
 
-    response = classify_message(X, Classifier_NB("BayNv"), preprocessor)
-    print(response)
+    most_used_words = open('./data/bad_words.txt').readlines()
+    bad_words = [_.lower().replace('\n', '') for _ in most_used_words]
+
+    # remove words not found in corpus
+    has_bad_words = False
+    only_corpus_words = []
+    for wd in preprocessed_message:
+        if wd in model['feature names']:
+            only_corpus_words += [wd]
+            if wd in bad_words:
+                has_bad_words = True
+
+
+    cv = CountVectorizer(max_features=len(model['feature names']))
+    X = cv.fit_transform([' '.join(model['feature names']), ' '.join(only_corpus_words)]).toarray()
+    
+    # remove first line
+    X = np.delete(X, 0, 0)
+
+    # add columns
+    X = np.append(X, np.array(['1' if has_bad_words else '0' for _ in X]).reshape(len(X), 1), axis=1)
+    X = np.append(X, np.array(['0' for _ in X]).reshape(len(X), 1), axis=1)
+
+    pred = model['classifier'].predict(X)
+
+    # subset = pd.DataFrame([[messageToBeClassified, '0']])
+    # X, y = preprocessor.dataset_filter(subset)
+    print('Pred = ' + pred[0])
+
+    # response = classify_message(X, Classifier_NB("BayNv"), preprocessor)
+    # print(response)
 
 
 ws = Tk()
