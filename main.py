@@ -59,7 +59,9 @@ def precision(classifier, preprocessor):
             # store model
             if not os.path.exists('./data/models'):
                 os.mkdir('./data/models')
-            pickle.dump({'classifier': classifier, 'feature names': preprocessor.feature_names, 'predict req shape': X_test.shape}, open('./data/models/' + classifier.name + ' ' + preprocessor.name + '.sav', 'wb'))
+            pickle.dump({'classifier': classifier, 'feature names': preprocessor.feature_names,
+                         'predict req shape': X_test.shape},
+                        open('./data/models/' + classifier.name + ' ' + preprocessor.name + '.sav', 'wb'))
 
             # get the targeted class of messages from the test set
             last = len(X_test[0]) - 1
@@ -130,11 +132,13 @@ def precision_recall(classifier, preprocessor):
         # store model
         if not os.path.exists('./data/models'):
             os.mkdir('./data/models')
-        pickle.dump({'classifier': classifier, 'feature names': preprocessor.feature_names, 'predict req shape': X_test.shape}, open('./data/models/' + classifier.name + ' ' + preprocessor.name + '.sav', 'wb'))
+        pickle.dump(
+            {'classifier': classifier, 'feature names': preprocessor.feature_names, 'predict req shape': X_test.shape},
+            open('./data/models/' + classifier.name + ' ' + preprocessor.name + '.sav', 'wb'))
 
         # predicting the test set results
         y_pred = classifier.predict(X_test)
-        print(X_test[0],len(X_test[0]))
+        print(X_test[0], len(X_test[0]))
 
         if _DEBUG:
             print("\n       First %g rows in prediction:" % (_DEBUG_show_rows))
@@ -166,8 +170,12 @@ def precision_recall(classifier, preprocessor):
     return prec, recall
 
 
-def run():
+def f_measure(classifier, preprocessor):
+    prec, recall = precision_recall(classifier, preprocessor)
+    return (2 * prec * recall) / (prec + recall)
 
+
+def run():
     classifiers = []
     preprocessors = []
 
@@ -180,29 +188,29 @@ def run():
     preprocessors += [SmallGroups("LemGroups", "data/16k-lemmatized.txt", "data/16k-words-list.txt")]
     preprocessors += [SmallGroups("UnprocessedGroups", "data/16k_neprocesat.txt", "data/16k_neprocesat_words_list.txt")]
 
-    # compare precision and recall for all combinations of classifers and preprocessors
+    # display f-measure for all classifers and preprocessors
     results = pd.DataFrame(columns=["[" + n1.name + '+' + n2.name + "]" for n1 in classifiers for n2 in preprocessors],
-                           index=["precision", "recall"])
+                           index=["F-Measure"])
     for classifier in classifiers:
         for preprocessor in preprocessors:
             print(
                 "\n=========================== Processing " + classifier.name + "+" + preprocessor.name + " =====================================")
-            prec, recall = 0, 0
+            fMeasure = 0
             if "_" in classifier.name:
-                prec, recall = precision(classifier, preprocessor)
+                fMeasure = f_measure(classifier, preprocessor)
             else:
-                prec, recall = precision_recall(classifier, preprocessor)
-            results["[" + classifier.name + "+" + preprocessor.name + "]"]["precision"] = prec
-            results["[" + classifier.name + "+" + preprocessor.name + "]"]["recall"] = recall
+                fMeasure = f_measure(classifier, preprocessor)
+            results["[" + classifier.name + "+" + preprocessor.name + "]"]["F-Measure"] = fMeasure
             if LOGGING:
-                with open('logs/' + classifier.name + '.log', 'a') as f:  # logging purposes only
-                    f.write(str(prec) + '\t' + str(recall))
+                with open('logs/' + classifier.name + preprocessor.name + '.log', 'a') as f:  # logging purposes only
+                    f.write(str(fMeasure))
                     f.write('\n')
     with open("./data/stats.txt", 'a') as f:
         f.write(
             results.to_string()
         )
     print(results)
+
 
 if __name__ == '__main__':
     run()

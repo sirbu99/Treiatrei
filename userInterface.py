@@ -11,6 +11,7 @@ import pickle
 import os
 from sklearn.feature_extraction.text import CountVectorizer
 
+
 def openFile():
     clearText()
     tf = filedialog.askopenfilename(
@@ -35,16 +36,13 @@ def showStats():
     novi = Toplevel()
     canvas = Canvas(novi, width=800, height=600)
     canvas.pack(expand=YES, fill=BOTH)
-    stats = PhotoImage(file='./data/diferenta-bn-flip.png')
+    stats = PhotoImage(file='./data/performance.png')
     canvas.create_image(80, 80, image=stats, anchor=NW)
     canvas.gif1 = stats
 
 
 def runClassifier():
     model = pickle.load(open('./data/models/BayNv LemGroups.sav', 'rb'))
-
-    # preprocessor = SmallGroups("LemGroups", "data/16k-lemmatized.txt", "data/16k-words-list.txt")
-    # messagebox.showinfo('Result', "The message is offensive!")
     messageToBeClassified = txtarea.get("1.0", "end")
 
     preprocessed_message = re.sub(r'[^a-zA-Z\s]', '', script_preprocess.correctedLine(messageToBeClassified))
@@ -63,10 +61,9 @@ def runClassifier():
             if wd in bad_words:
                 has_bad_words = True
 
-
     cv = CountVectorizer(max_features=len(model['feature names']))
     X = cv.fit_transform([' '.join(model['feature names']), ' '.join(only_corpus_words)]).toarray()
-    
+
     # remove first line
     X = np.delete(X, 0, 0)
 
@@ -75,13 +72,12 @@ def runClassifier():
     # X = np.append(X, np.array(['2' for _ in X]).reshape(len(X), 1), axis=1)
 
     pred = model['classifier'].predict(X)
-
-    # subset = pd.DataFrame([[messageToBeClassified, '0']])
-    # X, y = preprocessor.dataset_filter(subset)
     print('Pred = ' + pred[0])
-
-    # response = classify_message(X, Classifier_NB("BayNv"), preprocessor)
-    # print(response)
+    if pred[0] == '0':
+        messageToDisplay = "The message isn't offensive."
+    else:
+        messageToDisplay = "The message is offensive!"
+    messagebox.showinfo('Result', messageToDisplay)
 
 
 ws = Tk()
