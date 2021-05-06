@@ -35,11 +35,15 @@ if __name__ != '__main__':
             f_p.close()
             temp_X, temp_y = self.dataset_filter(self.dataset[0])
 
-            # trecem fiecare lista de mesaje prin fct dataset_filter-> returneaza X,y folositi in antrenarea modelului
             self.X = []
             self.y = []
-            self.X.append(temp_X)
-            self.y.append(temp_y)
+
+            # impartim in 10 
+            for xi in range(10):
+                start_index = xi * int(len(lines) / 10)
+
+                self.X.append(temp_X[start_index:start_index + int(len(lines) / 10)])
+                self.y.append(temp_y[start_index:start_index + int(len(lines) / 10)])
 
         def get_model(self, DEBUG_MODE=False):
             """DEBUG_MODE takes more time to generate a visual representation of the one hot vector self.X"""

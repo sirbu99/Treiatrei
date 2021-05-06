@@ -109,50 +109,57 @@ def get_ten_fold_indexes():
         if current and current not in retlist:
             retlist.append(current)
     return retlist[::-1]
-    
+
 def precision_recall(classifier, preprocessor):
     _DEBUG = False
     X, y = preprocessor.get_model(_DEBUG)
 
     ten_fold = get_ten_fold_indexes()
 
-    for test_indexes in ten_fold:
-        X_test = X[test_indexes[0]] + X[test_indexes[1]]
-
-        X_train = []
-        for index in range(len(X)):
-            if index != test_indexes[0] and index != test_indexes[1]:
-                X_train += X[index]
-        
-    # splitting the data set into training set and test set
     conf_matrix = []
     total_test = 0
     total_training = 0
-    for i in range(len(X)):
-        if _DEBUG:
-            X[i] = [(X[i][_], preprocessor.pretty_hot_vector[i][_], preprocessor.dataset[i][_]) for _ in
-                    range(len(X[i]))]
+    for test_indexes in ten_fold:
+        X_test = numpy.vstack((X[test_indexes[0]],X[test_indexes[1]]))
+        y_test = numpy.hstack((y[test_indexes[0]],y[test_indexes[1]]))
 
-        X_train, X_test, y_train, y_test = train_test_split(X[i], y[i], test_size=0.25)
+        X_train = None
+        for index in range(len(X)):
+            if index != test_indexes[0] and index != test_indexes[1]:
+                if X_train is None:
+                    X_train = X[index]
+                    y_train = y[index]
+                else:
+                    X_train = numpy.vstack((X_train, X[index]))
+                    y_train = numpy.hstack((y_train, y[index]))
+        
 
-        # DEBUG: am verificat ca datele de la model sunt amestecate de fiecare data cu test_train_split!
-        # XDEBUG_train, XDEBUG_test, yDEBUG_train, yDEBUG_test = train_test_split(preprocessor.pretty_hot_vector[i], y[i], test_size=0.25)
-        _DEBUG_show_rows = 5
-        if _DEBUG:
-            XDEBUG_train = [_[1] for _ in X_train]
-            XDEBUG_train_review = [_[2] for _ in X_train]
-            X_train = [_[0] for _ in X_train]
-            XDEBUG_test = [_[1] for _ in X_test]
-            XDEBUG_test_review = [_[2] for _ in X_test]
-            X_test = [_[0] for _ in X_test]
+        # splitting the data set into training set and test set
+        # for i in range(len(X)):
+        # if _DEBUG:
+        #     X[i] = [(X[i][_], preprocessor.pretty_hot_vector[i][_], preprocessor.dataset[i][_]) for _ in
+        #             range(len(X[i]))]
 
-            print("\n       First %g rows in train set:" % (_DEBUG_show_rows))
-            print(XDEBUG_train_review[:_DEBUG_show_rows])
-            print(XDEBUG_train[:_DEBUG_show_rows])
+        # X_train, X_test, y_train, y_test = train_test_split(X[i], y[i], test_size=0.25)
 
-            print("\n       First %g rows in test set:" % (_DEBUG_show_rows))
-            print(XDEBUG_test_review[:_DEBUG_show_rows])
-            print(XDEBUG_test[:_DEBUG_show_rows])
+        # # DEBUG: am verificat ca datele de la model sunt amestecate de fiecare data cu test_train_split!
+        # # XDEBUG_train, XDEBUG_test, yDEBUG_train, yDEBUG_test = train_test_split(preprocessor.pretty_hot_vector[i], y[i], test_size=0.25)
+        # _DEBUG_show_rows = 5
+        # if _DEBUG:
+        #     XDEBUG_train = [_[1] for _ in X_train]
+        #     XDEBUG_train_review = [_[2] for _ in X_train]
+        #     X_train = [_[0] for _ in X_train]
+        #     XDEBUG_test = [_[1] for _ in X_test]
+        #     XDEBUG_test_review = [_[2] for _ in X_test]
+        #     X_test = [_[0] for _ in X_test]
+
+        #     print("\n       First %g rows in train set:" % (_DEBUG_show_rows))
+        #     print(XDEBUG_train_review[:_DEBUG_show_rows])
+        #     print(XDEBUG_train[:_DEBUG_show_rows])
+
+        #     print("\n       First %g rows in test set:" % (_DEBUG_show_rows))
+        #     print(XDEBUG_test_review[:_DEBUG_show_rows])
+        #     print(XDEBUG_test[:_DEBUG_show_rows])
 
         warnings.filterwarnings("ignore", category=FutureWarning)
         classifier.fit(X_train, y_train)
