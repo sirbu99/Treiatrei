@@ -25,26 +25,21 @@ if __name__ != '__main__':
             list_index = 0
             line_index = 0
             f_p = open(self.corpus_path, "r", encoding='utf-8')
-            for line in f_p.readlines():
-                if line_index == 3500:
-                    line_index = 0
-                    self.dataset.append([])
-                    list_index += 1
-                self.dataset[list_index].append([line[2:], line[0]])
-                line_index += 1
-            f_p.close()
+            lines = f_p.readlines()
 
             most_used_words = open('./data/bad_words.txt').readlines()
             self.bad_words = [_.lower().replace('\n', '') for _ in most_used_words]
 
+            for line in lines:
+                self.dataset[0].append([line[2:], line[0]])
+            f_p.close()
+            temp_X, temp_y = self.dataset_filter(self.dataset[0])
+
             # trecem fiecare lista de mesaje prin fct dataset_filter-> returneaza X,y folositi in antrenarea modelului
             self.X = []
             self.y = []
-            for i in range(len(self.dataset)):
-                # print("Dataset Filter " + str(i))
-                temp_X, temp_y = self.dataset_filter(self.dataset[i])
-                self.X.append(temp_X)
-                self.y.append(temp_y)
+            self.X.append(temp_X)
+            self.y.append(temp_y)
 
         def get_model(self, DEBUG_MODE=False):
             """DEBUG_MODE takes more time to generate a visual representation of the one hot vector self.X"""

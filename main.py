@@ -4,6 +4,7 @@ Main module
 import pandas as pd
 import pickle
 import os
+import numpy 
 
 from classifiers.BayesNaiv import Classifier_NB
 from classifiers.Random import FlipCoin
@@ -91,11 +92,38 @@ def precision(classifier, preprocessor):
     # recall = 0
     return prec, 0
 
-
+def get_ten_fold_indexes():
+    retlist=[]
+    current=[]
+    for comb in range(3,769):
+        #vf daca s exact 2 de 1 in numar
+        strcomb=str(bin(comb))
+        count=strcomb.count('1')
+        rep='0000000000'
+        if count==2:
+            rep=rep[0:len(rep)-len(strcomb)]+strcomb
+            current=[]
+            for j in range(0,len(rep)):
+                if rep[j]=='1':
+                    current.append(j%10)
+        if current and current not in retlist:
+            retlist.append(current)
+    return retlist[::-1]
+    
 def precision_recall(classifier, preprocessor):
     _DEBUG = False
     X, y = preprocessor.get_model(_DEBUG)
 
+    ten_fold = get_ten_fold_indexes()
+
+    for test_indexes in ten_fold:
+        X_test = X[test_indexes[0]] + X[test_indexes[1]]
+
+        X_train = []
+        for index in range(len(X)):
+            if index != test_indexes[0] and index != test_indexes[1]:
+                X_train += X[index]
+        
     # splitting the data set into training set and test set
     conf_matrix = []
     total_test = 0
