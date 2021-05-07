@@ -4,6 +4,7 @@ Main module
 import pandas as pd
 import pickle
 import os
+import numpy 
 
 from classifiers.BayesNaiv import Classifier_NB
 from classifiers.Random import FlipCoin
@@ -91,40 +92,76 @@ def precision(classifier, preprocessor):
     # recall = 0
     return prec, 0
 
+def get_ten_fold_indexes():
+    retlist=[]
+    current=[]
+    for comb in range(3,769):
+        #vf daca s exact 2 de 1 in numar
+        strcomb=str(bin(comb))
+        count=strcomb.count('1')
+        rep='0000000000'
+        if count==2:
+            rep=rep[0:len(rep)-len(strcomb)]+strcomb
+            current=[]
+            for j in range(0,len(rep)):
+                if rep[j]=='1':
+                    current.append(j%10)
+        if current and current not in retlist:
+            retlist.append(current)
+    return retlist[::-1]
 
 def precision_recall(classifier, preprocessor):
     _DEBUG = False
     X, y = preprocessor.get_model(_DEBUG)
 
-    # splitting the data set into training set and test set
+    ten_fold = get_ten_fold_indexes()
+
     conf_matrix = []
     total_test = 0
     total_training = 0
-    for i in range(len(X)):
-        if _DEBUG:
-            X[i] = [(X[i][_], preprocessor.pretty_hot_vector[i][_], preprocessor.dataset[i][_]) for _ in
-                    range(len(X[i]))]
+    for step, test_indexes in enumerate(ten_fold):
+        lstFolds_X = []
+        lstFolds_y = []
+        train_indexes =[]
+        for index in range(len(X)):
+            if index != test_indexes[0] and index != test_indexes[1]:
+                lstFolds_X += [X[index]]
+                lstFolds_y += [y[index]]
+                train_indexes += [index]
+        
+        print("[%u/%u] ten-fold train set %s test set %s" %(step + 1, len(ten_fold), str(train_indexes), str(test_indexes)))
+        X_test = numpy.vstack((X[test_indexes[0]],X[test_indexes[1]]))
+        y_test = numpy.hstack((y[test_indexes[0]],y[test_indexes[1]]))
 
-        X_train, X_test, y_train, y_test = train_test_split(X[i], y[i], test_size=0.25)
+        X_train = numpy.vstack(lstFolds_X)
+        y_train = numpy.hstack(lstFolds_y)
 
-        # DEBUG: am verificat ca datele de la model sunt amestecate de fiecare data cu test_train_split!
-        # XDEBUG_train, XDEBUG_test, yDEBUG_train, yDEBUG_test = train_test_split(preprocessor.pretty_hot_vector[i], y[i], test_size=0.25)
-        _DEBUG_show_rows = 5
-        if _DEBUG:
-            XDEBUG_train = [_[1] for _ in X_train]
-            XDEBUG_train_review = [_[2] for _ in X_train]
-            X_train = [_[0] for _ in X_train]
-            XDEBUG_test = [_[1] for _ in X_test]
-            XDEBUG_test_review = [_[2] for _ in X_test]
-            X_test = [_[0] for _ in X_test]
+        # splitting the data set into training set and test set
+        # for i in range(len(X)):
+        # if _DEBUG:
+        #     X[i] = [(X[i][_], preprocessor.pretty_hot_vector[i][_], preprocessor.dataset[i][_]) for _ in
+        #             range(len(X[i]))]
 
-            print("\n       First %g rows in train set:" % (_DEBUG_show_rows))
-            print(XDEBUG_train_review[:_DEBUG_show_rows])
-            print(XDEBUG_train[:_DEBUG_show_rows])
+        # X_train, X_test, y_train, y_test = train_test_split(X[i], y[i], test_size=0.25)
 
-            print("\n       First %g rows in test set:" % (_DEBUG_show_rows))
-            print(XDEBUG_test_review[:_DEBUG_show_rows])
-            print(XDEBUG_test[:_DEBUG_show_rows])
+        # # DEBUG: am verificat ca datele de la model sunt amestecate de fiecare data cu test_train_split!
+        # # XDEBUG_train, XDEBUG_test, yDEBUG_train, yDEBUG_test = train_test_split(preprocessor.pretty_hot_vector[i], y[i], test_size=0.25)
+        # _DEBUG_show_rows = 5
+        # if _DEBUG:
+        #     XDEBUG_train = [_[1] for _ in X_train]
+        #     XDEBUG_train_review = [_[2] for _ in X_train]
+        #     X_train = [_[0] for _ in X_train]
+        #     XDEBUG_test = [_[1] for _ in X_test]
+        #     XDEBUG_test_review = [_[2] for _ in X_test]
+        #     X_test = [_[0] for _ in X_test]
+
+        #     print("\n       First %g rows in train set:" % (_DEBUG_show_rows))
+        #     print(XDEBUG_train_review[:_DEBUG_show_rows])
+        #     print(XDEBUG_train[:_DEBUG_show_rows])
+
+        #     print("\n       First %g rows in test set:" % (_DEBUG_show_rows))
+        #     print(XDEBUG_test_review[:_DEBUG_show_rows])
+        #     print(XDEBUG_test[:_DEBUG_show_rows])
 
         warnings.filterwarnings("ignore", category=FutureWarning)
         classifier.fit(X_train, y_train)
@@ -133,12 +170,12 @@ def precision_recall(classifier, preprocessor):
         if not os.path.exists('./data/models'):
             os.mkdir('./data/models')
         pickle.dump(
-            {'classifier': classifier, 'feature names': preprocessor.feature_names, 'predict req shape': X_test.shape},
-            open('./data/models/' + classifier.name + ' ' + preprocessor.name + '.sav', 'wb'))
+            {'classifier': classifier, 'feature names': preprocessor.feature_names, 'predict req shape': X_test.shape, 'ten-fold': test_indexes},
+            open('./data/models/' + classifier.name + ' ' + preprocessor.name + ' [ten-fold ' + str(test_indexes[0]) + '-' + str(test_indexes[1]) + '].sav', 'wb'))
 
         # predicting the test set results
         y_pred = classifier.predict(X_test)
-        print(X_test[0], len(X_test[0]))
+        # print(X_test[0], len(X_test[0]))
 
         if _DEBUG:
             print("\n       First %g rows in prediction:" % (_DEBUG_show_rows))
@@ -178,6 +215,8 @@ def f_measure(classifier, preprocessor):
 def run():
     classifiers = []
     preprocessors = []
+
+    print("Init objects...")
 
     # (dependency injection) Add new classifiers and/or preprocessors in the lists below
     classifiers += [Classifier_NB("BayNv")]
