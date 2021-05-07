@@ -8,6 +8,7 @@ if __name__ != '__main__':
 
     class SmallGroups(IPreprocessor):
         def __init__(self, name, corpus_path, words_list_path):
+            print("Loading preprocessor " + name)
             self.name = name
             # nltk.download('stopwords')
 
@@ -59,27 +60,28 @@ if __name__ != '__main__':
         def dataset_filter(self, subset):
 
             word_count = 4000
-            words = []
+            # words = []
             f_n = open(self.words_list_path, "r", encoding='utf-8')
             word_count = int(f_n.readline())
-            for line in f_n.readlines():
-                words.append([line[2:], line[0]])
+            # for line in f_n.readlines():
+            #     words.append([line[2:], line[0]])
             f_n.close()
 
             subset = pd.DataFrame(subset)
             subset.columns = ["Text", "Reviews"]
 
             corpus = []
-            has_bad_words = subset.iloc[:, 1].values.copy()
+            # has_bad_words = subset.iloc[:, 1].values.copy()
             for i in range(0, len(subset)):
                 text = re.sub(r'[^a-zA-Z\s]', '', subset['Text'][i])
                 text = text.lower()
                 text = text.split()
 
-                has_bad_words[i] = '0'
+                # has_bad_words[i] = '0'
                 for wrd in text:
                     if wrd in self.bad_words:
-                        has_bad_words[i] = '1'
+                        # has_bad_words[i] = '1'
+                        text += ['hasBadWordsInTheMessage']
                         break
 
                 text = ' '.join(text)
@@ -94,9 +96,9 @@ if __name__ != '__main__':
             # print(X)
             y = subset.iloc[:, 1].values
 
-            # add bad words presence as feature
-            has_bad_words_T = has_bad_words.reshape(len(has_bad_words), 1)
-            X = np.append(X, has_bad_words_T, axis=1)
+            # # add bad words presence as feature
+            # has_bad_words_T = has_bad_words.reshape(len(has_bad_words), 1)
+            # X = np.append(X, has_bad_words_T, axis=1)
 
             # # add prediction as feature
             # y_T = y.reshape(len(y), 1)

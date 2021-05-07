@@ -58,7 +58,8 @@ def runClassifier():
     for wd in preprocessed_message:
         if wd in model['feature names']:
             only_corpus_words += [wd]
-            if wd in bad_words:
+            if wd in bad_words and not has_bad_words:
+                only_corpus_words += ['hasBadWordsInTheMessage']
                 has_bad_words = True
 
     cv = CountVectorizer(max_features=len(model['feature names']))
