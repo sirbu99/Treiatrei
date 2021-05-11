@@ -1,5 +1,6 @@
 from tkinter import *
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox,ttk
+import tkinter
 
 import numpy as np
 import pandas as pd
@@ -8,7 +9,7 @@ from main import classify_message
 from preprocessors.smallgroups import SmallGroups
 from preprocessors.Preprocesare_text import script_preprocess
 import pickle
-import os
+import os, re
 from sklearn.feature_extraction.text import CountVectorizer
 
 
@@ -20,7 +21,8 @@ def openFile():
         filetypes=(("Text Files", "*.txt"),)
     )
     pathh.insert(END, tf)
-    tf = open(tf)
+    
+    tf = open(tf,"r",encoding='utf-8')
     data = tf.read()
     txtarea.insert(END, data)
     tf.close()
@@ -42,9 +44,21 @@ def showStats():
 
 
 def runClassifier():
-    model = pickle.load(open('./data/models/BayNv LemGroups.sav', 'rb'))
-    messageToBeClassified = txtarea.get("1.0", "end")
+    #luam modelul cu clasificatorul corespunzator
+    model=None
+    selected_classifier = classifier.get()
 
+    if selected_classifier==" Bayes + lemmatization":
+        model=pickle.load(open('./data/models/BayNv LemGroups.sav','rb'))
+    elif selected_classifier == " Random + lemmatization" :
+        model=pickle.load(open('./data/models/Flip LemGroups.sav','rb'))
+    elif selected_classifier == " Random":
+        model=pickle.load(open('./data/models/Flip UnprocessedGroups.sav','rb'))
+    elif selected_classifier == " Bayes":
+        model=pickle.load(open('./data/models/BayNv UnprocessedGroups.sav','rb'))
+    
+    messageToBeClassified = txtarea.get("1.0", "end")
+    
     preprocessed_message = re.sub(r'[^a-zA-Z\s]', '', script_preprocess.correctedLine(messageToBeClassified))
     preprocessed_message = preprocessed_message.lower()
     preprocessed_message = preprocessed_message.split()
@@ -70,7 +84,6 @@ def runClassifier():
 
     # add columns
     X = np.append(X, np.array(['1' if has_bad_words else '0' for _ in X]).reshape(len(X), 1), axis=1)
-    # X = np.append(X, np.array(['2' for _ in X]).reshape(len(X), 1), axis=1)
 
     pred = model['classifier'].predict(X)
     print('Pred = ' + pred[0])
@@ -83,22 +96,41 @@ def runClassifier():
 
 ws = Tk()
 ws.title("Offensive Language Detection for Romanian Language")
-ws.geometry("800x600")
+ws.geometry("1000x700")
 ws['bg'] = '#fb0'
 
 label = Label(ws, text="Scrieti un mesaj pentru a fi clasificat", font="Helvetica 16 bold italic", fg="white",
               bg="#fb0")
-label.pack()
+label.grid(row=0,column=1)
+
 
 txtarea = Text(ws, width=80, height=30)
-txtarea.pack(pady=20)
+txtarea.grid(row=1,column=1)
 
 pathh = Entry(ws)
-pathh.pack(side=LEFT, expand=True, fill=X, padx=20)
+pathh.grid(row=3,column=0,pady=2)
 
-Button(ws, text="Show Stats", command=showStats).pack(side=RIGHT, expand=True, fill=X, padx=20)
-Button(ws, text="Clear", command=clearText).pack(side=RIGHT, expand=True, fill=X, padx=20)
-Button(ws, text="Run", command=runClassifier).pack(side=RIGHT, expand=True, fill=X, padx=20)
-Button(ws, text="Open File", command=openFile).pack(side=RIGHT, expand=True, fill=X, padx=20)
+label2 = Label(ws, text="Alegeti clasificatorul", font="Helvetica 16 bold italic", fg="white",
+              bg="#fb0")
+label2.grid(row=2,column=1,pady=2)
+
+n = tkinter.StringVar()
+classifier = ttk.Combobox(ws, width = 27, textvariable = n)
+
+classifier['values'] = (' Random + lemmatization',
+                          ' Bayes + lemmatization',
+                          ' Random',
+                          ' Bayes'
+                        )
+  
+classifier.current()
+classifier.grid(row=3,column=1,pady=2)
+selected_classifier=None
+
+Button(ws, text="Show Stats", command=showStats,height=1,width=20).grid(row=3,column=2,pady=2)
+Button(ws, text="Clear", command=clearText, height=1,width=20).grid(row=4,column=2,pady=2)
+Button(ws, text="Run", command=runClassifier, height=1,width=20).grid(row=4,column=1,pady=2)
+Button(ws, text="Open File", command=openFile, height=1,width=20).grid(row=4,column=0,pady=2)
+
 
 ws.mainloop()
