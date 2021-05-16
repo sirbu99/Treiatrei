@@ -8,6 +8,7 @@ import numpy
 
 from classifiers.BayesNaiv import Classifier_NB
 from classifiers.Random import FlipCoin
+from classifiers.AdaBoost import Classifier_AdaBoost
 from preprocessors.smallgroups import SmallGroups
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
@@ -219,13 +220,15 @@ def run():
     print("Init objects...")
 
     # (dependency injection) Add new classifiers and/or preprocessors in the lists below
-    classifiers += [Classifier_NB("BayNv")]
-    classifiers += [FlipCoin("Flip")]
-    classifiers += [Classifier_NB("BayNv_offensive")]
-    classifiers += [Classifier_NB("BayNv_non-offensive")]
+    classifiers += [Classifier_AdaBoost("AdaBoost")]
+    # classifiers += [Classifier_NB("BayNv")]
+    # classifiers += [FlipCoin("Flip")]
+    # classifiers += [Classifier_NB("BayNv_offensive")]
+    # classifiers += [Classifier_NB("BayNv_non-offensive")]
 
-    preprocessors += [SmallGroups("LemGroups", "data/16k-lemmatized.txt", "data/16k-words-list.txt")]
-    preprocessors += [SmallGroups("UnprocessedGroups", "data/16k_neprocesat.txt", "data/16k_neprocesat_words_list.txt")]
+    preprocessors += [SmallGroups("LemGroups", "preprocessors/Lematizare RACAI/corpus-lemmatized.txt", "preprocessors/Lematizare RACAI/corpus-words-list.txt")]
+    #preprocessors += [SmallGroups("LemGroups","data/16k-lemmatized.txt","data/16k-words-list.txt")]
+    #preprocessors += [SmallGroups("UnprocessedGroups", "data/16k_neprocesat.txt", "data/16k_neprocesat_words_list.txt")]
 
     # display f-measure for all classifers and preprocessors
     results = pd.DataFrame(columns=["[" + n1.name + '+' + n2.name + "]" for n1 in classifiers for n2 in preprocessors],
