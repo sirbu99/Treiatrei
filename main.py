@@ -8,6 +8,7 @@ import numpy
 
 from classifiers.BayesNaiv import Classifier_NB
 from classifiers.Random import FlipCoin
+from classifiers.AdaBoost import Classifier_AdaBoost
 from preprocessors.smallgroups import SmallGroups
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
@@ -165,14 +166,18 @@ def precision_recall(classifier, preprocessor):
 
         warnings.filterwarnings("ignore", category=FutureWarning)
         classifier.fit(X_train, y_train)
-
+        #print(preprocessor.feature_names)
         # store model
         if not os.path.exists('./data/models'):
             os.mkdir('./data/models')
-        pickle.dump(
-            {'classifier': classifier, 'feature names': preprocessor.feature_names, 'predict req shape': X_test.shape, 'ten-fold': test_indexes},
-            open('./data/models/' + classifier.name + ' ' + preprocessor.name + ' [ten-fold ' + str(test_indexes[0]) + '-' + str(test_indexes[1]) + '].sav', 'wb'))
 
+        print(os.path.exists("./data/models/AdaBoost LemGroups [ten-fold 0-1].sav"))
+
+        file=open('./data/models/' + classifier.name + ' ' + preprocessor.name + ' [ten-fold ' + str(test_indexes[0]) + '-' + str(test_indexes[1]) + '].sav', 'wb')
+        pickle.dump(
+            {'classifier': classifier, 'feature names': preprocessor.feature_names, 'predict req shape': X_test.shape},
+            file)
+        file.close()
         # predicting the test set results
         y_pred = classifier.predict(X_test)
         # print(X_test[0], len(X_test[0]))
@@ -219,13 +224,15 @@ def run():
     print("Init objects...")
 
     # (dependency injection) Add new classifiers and/or preprocessors in the lists below
-    classifiers += [Classifier_NB("BayNv")]
-    classifiers += [FlipCoin("Flip")]
-    classifiers += [Classifier_NB("BayNv_offensive")]
-    classifiers += [Classifier_NB("BayNv_non-offensive")]
+    classifiers += [Classifier_AdaBoost("AdaBoost")]
+    # classifiers += [Classifier_NB("BayNv")]
+    # classifiers += [FlipCoin("Flip")]
+    # classifiers += [Classifier_NB("BayNv_offensive")]
+    # classifiers += [Classifier_NB("BayNv_non-offensive")]
 
-    preprocessors += [SmallGroups("LemGroups", "data/16k-lemmatized.txt", "data/16k-words-list.txt")]
-    preprocessors += [SmallGroups("UnprocessedGroups", "data/16k_neprocesat.txt", "data/16k_neprocesat_words_list.txt")]
+    preprocessors += [SmallGroups("LemGroups", "preprocessors/Lematizare RACAI/corpus-lemmatized.txt", "preprocessors/Lematizare RACAI/corpus-words-list.txt")]
+    #preprocessors += [SmallGroups("LemGroups","data/16k-lemmatized.txt","data/16k-words-list.txt")]
+    #preprocessors += [SmallGroups("UnprocessedGroups", "data/16k_neprocesat.txt", "data/16k_neprocesat_words_list.txt")]
 
     # display f-measure for all classifers and preprocessors
     results = pd.DataFrame(columns=["[" + n1.name + '+' + n2.name + "]" for n1 in classifiers for n2 in preprocessors],

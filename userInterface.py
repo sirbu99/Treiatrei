@@ -56,6 +56,8 @@ def runClassifier():
         model=pickle.load(open('./data/models/Flip UnprocessedGroups.sav','rb'))
     elif selected_classifier == " Bayes":
         model=pickle.load(open('./data/models/BayNv UnprocessedGroups.sav','rb'))
+    elif selected_classifier == " Ada Boost":
+        model=pickle.load(open('./data/models/AdaBoost LemGroups.sav','rb'))
     
     messageToBeClassified = txtarea.get("1.0", "end")
     
@@ -83,7 +85,8 @@ def runClassifier():
     X = np.delete(X, 0, 0)
 
     # add columns
-    X = np.append(X, np.array(['1' if has_bad_words else '0' for _ in X]).reshape(len(X), 1), axis=1)
+    if(selected_classifier != ' Ada Boost'):
+        X = np.append(X, np.array(['1' if has_bad_words else '0' for _ in X]).reshape(len(X), 1), axis=1)
 
     pred = model['classifier'].predict(X)
     print('Pred = ' + pred[0])
@@ -120,7 +123,8 @@ classifier = ttk.Combobox(ws, width = 27, textvariable = n)
 classifier['values'] = (' Random + lemmatization',
                           ' Bayes + lemmatization',
                           ' Random',
-                          ' Bayes'
+                          ' Bayes',
+                          ' Ada Boost'
                         )
   
 classifier.current()
