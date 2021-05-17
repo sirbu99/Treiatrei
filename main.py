@@ -166,14 +166,18 @@ def precision_recall(classifier, preprocessor):
 
         warnings.filterwarnings("ignore", category=FutureWarning)
         classifier.fit(X_train, y_train)
-
+        #print(preprocessor.feature_names)
         # store model
         if not os.path.exists('./data/models'):
             os.mkdir('./data/models')
-        pickle.dump(
-            {'classifier': classifier, 'feature names': preprocessor.feature_names, 'predict req shape': X_test.shape, 'ten-fold': test_indexes},
-            open('./data/models/' + classifier.name + ' ' + preprocessor.name + ' [ten-fold ' + str(test_indexes[0]) + '-' + str(test_indexes[1]) + '].sav', 'wb'))
 
+        print(os.path.exists("./data/models/AdaBoost LemGroups [ten-fold 0-1].sav"))
+
+        file=open('./data/models/' + classifier.name + ' ' + preprocessor.name + ' [ten-fold ' + str(test_indexes[0]) + '-' + str(test_indexes[1]) + '].sav', 'wb')
+        pickle.dump(
+            {'classifier': classifier, 'feature names': preprocessor.feature_names, 'predict req shape': X_test.shape},
+            file)
+        file.close()
         # predicting the test set results
         y_pred = classifier.predict(X_test)
         # print(X_test[0], len(X_test[0]))

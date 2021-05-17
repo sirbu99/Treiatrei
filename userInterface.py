@@ -56,10 +56,9 @@ def runClassifier():
         model=pickle.load(open('./data/models/Flip UnprocessedGroups.sav','rb'))
     elif selected_classifier == " Bayes":
         model=pickle.load(open('./data/models/BayNv UnprocessedGroups.sav','rb'))
-    elif selected_classifier == " AdaBoost":
-        model=pickle.load(open('./data/models/AdaBoost LemGroups [ten-fold 1-0].sav','rb'))
+    elif selected_classifier == " Ada Boost":
+        model=pickle.load(open('./data/models/AdaBoost LemGroups.sav','rb'))
     
-    print("FEATURE NAMES:",model['feature names'])
     messageToBeClassified = txtarea.get("1.0", "end")
     
     preprocessed_message = re.sub(r'[^a-zA-Z\s]', '', script_preprocess.correctedLine(messageToBeClassified))
@@ -86,7 +85,8 @@ def runClassifier():
     X = np.delete(X, 0, 0)
 
     # add columns
-    X = np.append(X, np.array(['1' if has_bad_words else '0' for _ in X]).reshape(len(X), 1), axis=1)
+    if(selected_classifier != ' Ada Boost'):
+        X = np.append(X, np.array(['1' if has_bad_words else '0' for _ in X]).reshape(len(X), 1), axis=1)
 
     pred = model['classifier'].predict(X)
     print('Pred = ' + pred[0])
