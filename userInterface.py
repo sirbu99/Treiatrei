@@ -59,6 +59,7 @@ def runClassifier():
     elif selected_classifier == " AdaBoost":
         model=pickle.load(open('./data/models/AdaBoost LemGroups [ten-fold 1-0].sav','rb'))
     
+    print("FEATURE NAMES:",model['feature names'])
     messageToBeClassified = txtarea.get("1.0", "end")
     
     preprocessed_message = re.sub(r'[^a-zA-Z\s]', '', script_preprocess.correctedLine(messageToBeClassified))
