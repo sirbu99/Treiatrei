@@ -11,7 +11,7 @@ from preprocessors.Preprocesare_text import script_preprocess
 import pickle
 import os, re
 from sklearn.feature_extraction.text import CountVectorizer
-
+from crawlers.yt_crawler import start_crawler, next_yt_comment
 
 def openFile():
     clearText()
@@ -97,6 +97,20 @@ def runClassifier():
     messagebox.showinfo('Result', messageToDisplay)
 
 
+def next_comment():
+    clearText()
+    if url_crawl.get() == '':
+        return
+
+    global lasturl
+    if url_crawl.get() != lasturl:
+        lasturl = url_crawl.get()
+        start_crawler(lasturl)
+    
+    txtarea.insert(END, next_yt_comment())
+
+lasturl = ""
+
 ws = Tk()
 ws.title("Offensive Language Detection for Romanian Language")
 ws.geometry("1000x700")
@@ -112,6 +126,9 @@ txtarea.grid(row=1,column=1)
 
 pathh = Entry(ws)
 pathh.grid(row=3,column=0,pady=2)
+
+url_crawl = Entry(ws)
+url_crawl.grid(row=6, column=0,pady=2)
 
 label2 = Label(ws, text="Alegeti clasificatorul", font="Helvetica 16 bold italic", fg="white",
               bg="#fb0")
@@ -136,5 +153,6 @@ Button(ws, text="Clear", command=clearText, height=1,width=20).grid(row=4,column
 Button(ws, text="Run", command=runClassifier, height=1,width=20).grid(row=4,column=1,pady=2)
 Button(ws, text="Open File", command=openFile, height=1,width=20).grid(row=4,column=0,pady=2)
 
+Button(ws, text="Next YT Comment", command=next_comment, height=1,width=20).grid(row=7,column=0,pady=2)
 
 ws.mainloop()

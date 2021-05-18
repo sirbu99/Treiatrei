@@ -23,7 +23,7 @@
             "type": "python",
             "request": "launch",
             "program": "./crawlers/Crawler - youtube/getcomments.py",
-            "args":["--verbose", "--GUI", "--url=https://www.youtube.com/watch?v=aYpUCWFD5L4"],
+            "args":["--verbose", "--GUI", "--url=https://www.youtube.com/watch?v=VPDuU1zvLxY"],
             "console": "integratedTerminal"
         },
         {

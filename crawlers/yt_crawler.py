@@ -24,6 +24,8 @@ DEBUG_MODE = True
 msg = ""
 accountno = ""
 browser = None
+comment_index = -1
+browser = None
 
 def print_v(arg):
     # logging.info("[" + str(datetime.datetime.utcnow()) + "] " + accountno + " " + str(arg))
@@ -31,32 +33,9 @@ def print_v(arg):
         print(arg)
 
 
-def dumpFile(title, content):
-    if (not DEBUG_MODE): return
-    if (os.path.exists("./DEBUG") == False):
-        os.mkdir("./DEBUG")
-
-    filename = title + " " + str(datetime.datetime.utcnow()) + ".dump.html"
-    filename = filename.replace(":",".").replace(" ","-")
-
-    # https://regex101.com/r/VjbmPV/2
-    contentClean = content.get_attribute("outerHTML")
-    pattern = re.compile(r"<script[\s\S]+?\/script>")
-    subst = u""
-    contentClean = re.sub(pattern, subst, contentClean)
-
-    if platform.system() == "Windows":
-        dump = io.open("./DEBUG/" + filename , "w", encoding="utf-8")
-    if platform.system() == "Darwin":
-        dump = io.open("./DEBUG/" + filename , "w", encoding="utf-8")
-    if platform.system() == "Linux":
-        dump = io.open("./DEBUG/" + filename , "w", encoding="utf-8")
-    dump.write(contentClean)
-    dump.close()
-
 def startFirefox(url):
     options = webdriver.FirefoxOptions()
-    if not "--GUI" in sys.argv: options.add_argument("--headless")
+    # if not "--GUI" in sys.argv: options.add_argument("--headless")
     if platform.system() == "Windows":
         browser = webdriver.Firefox(options=options, executable_path='./crawlers/Crawler - youtube/drivers/win/geckodriver')
     if platform.system() == "Darwin":
@@ -129,45 +108,67 @@ def browseURL(url, user, pwd):
     browser.execute_script("arguments[0].scrollIntoView(true);", comment)
 
     comments_found = 0
-    while True:
-        comments = browser.find_elements_by_xpath("//ytd-comment-thread-renderer")
-        browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
-        simulateHumanShort()
-        if comments_found == len(comments):
-            break
-        comments_found = len(comments)
+    global comments
+    comments = browser.find_elements_by_xpath("//ytd-comment-thread-renderer")
+
+    # while True:
+    #     comments = browser.find_elements_by_xpath("//ytd-comment-thread-renderer")
+    #     browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
+    #     simulateHumanShort()
+    #     if comments_found == len(comments):
+    #         break
+    #     comments_found = len(comments)
 
 
-    for comment in comments:
+    # for comment in comments:
         # replies = comment.find_element_by_xpath("//div[@id='replies']//div[@id='expander']")
-        body = comment.find_element_by_xpath(".//div[@id='main']//ytd-expander[@id='expander']")
-        content = body.find_element_by_xpath(".//div[@id='content']")
-        show_more = body.find_element_by_xpath(".//paper-button[@id='more']")
-        if body.find_element_by_xpath(".//paper-button[@id='more']").get_attribute("hidden") == None:
-            browser.execute_script("arguments[0].click();", show_more)
-            simulateHumanMedium()
-
-        print_v(content.text)
-        data += [[content.text, len(content.text), url]]
         # simulateHumanShort()
 
-    df = pd.DataFrame(data, columns=["raw text", "text_length", "source"])
-    df.to_csv('data/list.csv', index=False)
+    # df = pd.DataFrame(data, columns=["raw text", "text_length", "source"])
+    # df.to_csv('data/list.csv', index=False)
 
     # dumpFile(title="after loading", content=browser.find_element_by_tag_name("html"))
     return browser
 
-def main():
-    url = ""
-    for arg in sys.argv:
-        if "--url=" in arg:
-            url = arg[len("--url="):]
+def next_yt_comment():
+    global comments
+    global comment_index
 
-    if url == "":
-        print_v("Insufficient arguments")
-        return
+    comment_index += 1
+    if comment_index >= len(comments):
+        comments = browser.find_elements_by_xpath("//ytd-comment-thread-renderer")
+        browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
+        simulateHumanShort()
 
-    print_v("\n======= Script started with arguments " + str(sys.argv) + " =========")
+    comment = comments[comment_index]
+
+    body = comment.find_element_by_xpath(".//div[@id='main']//ytd-expander[@id='expander']")
+    content = body.find_element_by_xpath(".//div[@id='content']")
+
+    try:
+        show_more = body.find_element_by_xpath(".//paper-button[@id='more']")
+        if body.find_element_by_xpath(".//paper-button[@id='more']").get_attribute("hidden") == None:
+            browser.execute_script("arguments[0].click();", show_more)
+            simulateHumanMedium()
+    except:
+        None
+
+    return content.text
+
+    # print_v(content.text)
+    # data += [[content.text, len(content.text), url]]
+
+def start_crawler(url):
+    # url = ""
+    # for arg in sys.argv:
+    #     if "--url=" in arg:
+    #         url = arg[len("--url="):]
+
+    # if url == "":
+    #     print_v("Insufficient arguments")
+    #     return
+
+    # print_v("\n======= Script started with arguments " + str(sys.argv) + " =========")
     global msg
     
     # # store facebook credentials in pickle file. Do this once, to create the pickle file, then comment the following 3 lines of code
@@ -180,9 +181,9 @@ def main():
         return
 
 
-    # finito
-    browser.quit()
-    print_v("======= Script ended =========")
+    # # finito
+    # browser.quit()
+    # print_v("======= Script ended =========")
 
 data = []
 
@@ -190,10 +191,10 @@ sPath = ""
 
 logging.basicConfig(filename=sPath + 'debug.log', level=logging.INFO)
 
-try:
-    main()
-except Exception as e:
-    logging.critical(e, exc_info=True)
-    if not browser is None:
-        browser.quit()
-        print_v("======= Script ended with error =========")
+# try:
+#     main()
+# except Exception as e:
+#     logging.critical(e, exc_info=True)
+#     if not browser is None:
+#         browser.quit()
+#         print_v("======= Script ended with error =========")

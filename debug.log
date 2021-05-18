@@ -32,3 +32,57 @@ Traceback (most recent call last):
     raise exception_class(message, screen, stacktrace)
 selenium.common.exceptions.NoSuchElementException: Message: Unable to locate element: //div[@id='dialog']//paper-button[@aria-label='No thanks']
 
+CRITICAL:root:Message: Unable to locate element: //div[@id='meta']
+Traceback (most recent call last):
+  File "./crawlers/Crawler - youtube/getcomments.py", line 194, in <module>
+    main()
+  File "./crawlers/Crawler - youtube/getcomments.py", line 178, in main
+    browser =  browseURL(url, user, pwd)
+  File "./crawlers/Crawler - youtube/getcomments.py", line 128, in browseURL
+    comment = browser.find_element_by_xpath("//div[@id='meta']")
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 394, in find_element_by_xpath
+    return self.find_element(by=By.XPATH, value=xpath)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 978, in find_element
+    'value': value})['value']
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 321, in execute
+    self.error_handler.check_response(response)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\errorhandler.py", line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: Unable to locate element: //div[@id='meta']
+
+CRITICAL:root:Message: Unable to locate element: //div[@id='meta']
+Traceback (most recent call last):
+  File "./crawlers/Crawler - youtube/getcomments.py", line 194, in <module>
+    main()
+  File "./crawlers/Crawler - youtube/getcomments.py", line 178, in main
+    browser =  browseURL(url, user, pwd)
+  File "./crawlers/Crawler - youtube/getcomments.py", line 128, in browseURL
+    comment = browser.find_element_by_xpath("//div[@id='meta']")
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 394, in find_element_by_xpath
+    return self.find_element(by=By.XPATH, value=xpath)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 978, in find_element
+    'value': value})['value']
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 321, in execute
+    self.error_handler.check_response(response)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\errorhandler.py", line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: Unable to locate element: //div[@id='meta']
+
+CRITICAL:root:Message: Unable to locate element: //div[@id='meta']
+Traceback (most recent call last):
+  File "./crawlers/Crawler - youtube/getcomments.py", line 194, in <module>
+    main()
+  File "./crawlers/Crawler - youtube/getcomments.py", line 178, in main
+    browser =  browseURL(url, user, pwd)
+  File "./crawlers/Crawler - youtube/getcomments.py", line 128, in browseURL
+    comment = browser.find_element_by_xpath("//div[@id='meta']")
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 394, in find_element_by_xpath
+    return self.find_element(by=By.XPATH, value=xpath)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 978, in find_element
+    'value': value})['value']
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 321, in execute
+    self.error_handler.check_response(response)
+  File "C:\Users\Dani\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\errorhandler.py", line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: Unable to locate element: //div[@id='meta']
+
