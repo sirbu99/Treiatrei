@@ -155,9 +155,9 @@ def precision_recall(classifier, preprocessor):
         y_pred = classifier.predict(X_test)
         # print(X_test[0], len(X_test[0]))
 
-        if _DEBUG:
-            print("\n       First %g rows in prediction:" % (_DEBUG_show_rows))
-            print(y_pred[:_DEBUG_show_rows])
+        # if _DEBUG:
+        #     print("\n       First %g rows in prediction:" % (_DEBUG_show_rows))
+        #     print(y_pred[:_DEBUG_show_rows])
 
         total_test += len(X_test)
         total_training += len(X_train)

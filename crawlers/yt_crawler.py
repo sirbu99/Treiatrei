@@ -1,7 +1,5 @@
 import platform
-import os.path
 import logging
-import datetime
 import sys
 import io
 import re

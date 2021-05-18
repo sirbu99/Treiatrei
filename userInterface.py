@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import filedialog, messagebox,ttk
+from tkinter import filedialog, messagebox, ttk
 import tkinter
 
 import numpy as np
@@ -13,16 +13,17 @@ import os, re
 from sklearn.feature_extraction.text import CountVectorizer
 from crawlers.yt_crawler import start_crawler, next_yt_comment
 
+
 def openFile():
     clearText()
     tf = filedialog.askopenfilename(
-        initialdir="/",
+        initialdir=".",
         title="Open Text file",
         filetypes=(("Text Files", "*.txt"),)
     )
     pathh.insert(END, tf)
-    
-    tf = open(tf,"r",encoding='utf-8')
+
+    tf = open(tf, "r", encoding='utf-8')
     data = tf.read()
     txtarea.insert(END, data)
     tf.close()
@@ -43,24 +44,74 @@ def showStats():
     canvas.gif1 = stats
 
 
-def runClassifier():
-    #luam modelul cu clasificatorul corespunzator
-    model=None
-    selected_classifier = classifier.get()
+def displayResultForHybrid(pred_list):
+    result = all(element == pred_list[0] for element in pred_list)
+    if result:
+        displayResult(pred_list[0])
+    else:
+        fMeasures = []
+        off = 0
+        nonOff = 0
+        with open("stats_for_hybrid.txt", "r") as f:
+            for i in range(0, 3):
+                fMeasures.append(f.readline().strip())
+        for i in range(0, len(pred_list)):
+            if pred_list[i] == '1':
+                off += float(fMeasures[i])
+                print("off =", off)
+            else:
+                nonOff += float(fMeasures[i])
+                print("nonOff =", nonOff)
+        if off > nonOff:
+            displayResult('1')
+        else:
+            displayResult('0')
 
-    if selected_classifier==" Bayes + lemmatization":
-        model=pickle.load(open('./data/models/BayNv LemGroups.sav','rb'))
-    elif selected_classifier == " Random + lemmatization" :
-        model=pickle.load(open('./data/models/Flip LemGroups.sav','rb'))
+
+def displayResult(prediction):
+    if prediction == '0':
+        messageToDisplay = "The message isn't offensive."
+    else:
+        messageToDisplay = "The message is offensive!"
+    messagebox.showinfo('Result', messageToDisplay)
+
+
+def runClassifier():
+    # luam modelul cu clasificatorul corespunzator
+    model = None
+    selected_classifier = classifier.get()
+    if selected_classifier == "":
+        messagebox.showinfo('Warning', 'Please select a classifier!')
+    elif selected_classifier == " Hybrid":
+        pred_list = []
+        model1 = pickle.load(open('./data/models/BayNv LemGroups.sav', 'rb'))
+        pred1 = run_model(model1, " Bayes + lemmatization")
+        model2 = pickle.load(open('./data/models/Flip LemGroups.sav', 'rb'))
+        pred2 = run_model(model2, " Random + lemmatization")
+        model3 = pickle.load(open('./data/models/AdaBoost LemGroups.sav', 'rb'))
+        pred3 = run_model(model3, " Ada Boost")
+        pred_list.extend([pred1, pred2, pred3])
+        print(pred_list)
+        displayResultForHybrid(pred_list)
+        return 0
+    elif selected_classifier == " Bayes + lemmatization":
+        model = pickle.load(open('./data/models/BayNv LemGroups.sav', 'rb'))
+    elif selected_classifier == " Random + lemmatization":
+        model = pickle.load(open('./data/models/Flip LemGroups.sav', 'rb'))
     elif selected_classifier == " Random":
-        model=pickle.load(open('./data/models/Flip UnprocessedGroups.sav','rb'))
+        model = pickle.load(open('./data/models/Flip UnprocessedGroups.sav', 'rb'))
     elif selected_classifier == " Bayes":
-        model=pickle.load(open('./data/models/BayNv UnprocessedGroups.sav','rb'))
+        model = pickle.load(open('./data/models/BayNv UnprocessedGroups.sav', 'rb'))
     elif selected_classifier == " Ada Boost":
-        model=pickle.load(open('./data/models/AdaBoost LemGroups.sav','rb'))
-    
+        model = pickle.load(open('./data/models/AdaBoost LemGroups.sav', 'rb'))
+
+    prediction = run_model(model, selected_classifier)
+    displayResult(prediction)
+
+
+def run_model(model, selected_classifier):
     messageToBeClassified = txtarea.get("1.0", "end")
-    
+
     preprocessed_message = re.sub(r'[^a-zA-Z\s]', '', script_preprocess.correctedLine(messageToBeClassified))
     preprocessed_message = preprocessed_message.lower()
     preprocessed_message = preprocessed_message.split()
@@ -85,16 +136,11 @@ def runClassifier():
     X = np.delete(X, 0, 0)
 
     # add columns
-    if(selected_classifier != ' Ada Boost'):
+    if (selected_classifier != ' Ada Boost'):
         X = np.append(X, np.array(['1' if has_bad_words else '0' for _ in X]).reshape(len(X), 1), axis=1)
 
     pred = model['classifier'].predict(X)
-    print('Pred = ' + pred[0])
-    if pred[0] == '0':
-        messageToDisplay = "The message isn't offensive."
-    else:
-        messageToDisplay = "The message is offensive!"
-    messagebox.showinfo('Result', messageToDisplay)
+    return pred[0]
 
 
 def next_comment():
@@ -106,8 +152,9 @@ def next_comment():
     if url_crawl.get() != lasturl:
         lasturl = url_crawl.get()
         start_crawler(lasturl)
-    
+
     txtarea.insert(END, next_yt_comment())
+
 
 lasturl = ""
 
@@ -118,41 +165,41 @@ ws['bg'] = '#fb0'
 
 label = Label(ws, text="Scrieti un mesaj pentru a fi clasificat", font="Helvetica 16 bold italic", fg="white",
               bg="#fb0")
-label.grid(row=0,column=1)
-
+label.grid(row=0, column=1)
 
 txtarea = Text(ws, width=80, height=30)
-txtarea.grid(row=1,column=1)
+txtarea.grid(row=1, column=1)
 
 pathh = Entry(ws)
-pathh.grid(row=3,column=0,pady=2)
+pathh.grid(row=3, column=0, pady=2)
 
 url_crawl = Entry(ws)
-url_crawl.grid(row=6, column=0,pady=2)
+url_crawl.grid(row=6, column=0, pady=2)
 
 label2 = Label(ws, text="Alegeti clasificatorul", font="Helvetica 16 bold italic", fg="white",
-              bg="#fb0")
-label2.grid(row=2,column=1,pady=2)
+               bg="#fb0")
+label2.grid(row=2, column=1, pady=2)
 
 n = tkinter.StringVar()
-classifier = ttk.Combobox(ws, width = 27, textvariable = n)
+classifier = ttk.Combobox(ws, width=27, textvariable=n)
 
 classifier['values'] = (' Random + lemmatization',
-                          ' Bayes + lemmatization',
-                          ' Random',
-                          ' Bayes',
-                          ' Ada Boost'
+                        ' Bayes + lemmatization',
+                        ' Random',
+                        ' Bayes',
+                        ' Ada Boost',
+                        ' Hybrid'
                         )
-  
+
 classifier.current()
-classifier.grid(row=3,column=1,pady=2)
-selected_classifier=None
+classifier.grid(row=3, column=1, pady=2)
+selected_classifier = None
 
-Button(ws, text="Show Stats", command=showStats,height=1,width=20).grid(row=3,column=2,pady=2)
-Button(ws, text="Clear", command=clearText, height=1,width=20).grid(row=4,column=2,pady=2)
-Button(ws, text="Run", command=runClassifier, height=1,width=20).grid(row=4,column=1,pady=2)
-Button(ws, text="Open File", command=openFile, height=1,width=20).grid(row=4,column=0,pady=2)
+Button(ws, text="Show Stats", command=showStats, height=1, width=20).grid(row=3, column=2, pady=2)
+Button(ws, text="Clear", command=clearText, height=1, width=20).grid(row=4, column=2, pady=2)
+Button(ws, text="Run", command=runClassifier, height=1, width=20).grid(row=4, column=1, pady=2)
+Button(ws, text="Open File", command=openFile, height=1, width=20).grid(row=4, column=0, pady=2, padx=20)
 
-Button(ws, text="Next YT Comment", command=next_comment, height=1,width=20).grid(row=7,column=0,pady=2)
+Button(ws, text="Next YT Comment", command=next_comment, height=1, width=20).grid(row=7, column=0, pady=2)
 
 ws.mainloop()
