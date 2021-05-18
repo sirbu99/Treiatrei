@@ -1,0 +1,29 @@
+		Documentatie testare:
+
+	logging:
+		Pentru a putea tine cont de cum functioneaza clasificatorul am facut o logare a datelor, care pentru fiecare clasificator ales, adauga in fisierul deja existent/isi creeaza un fisier nou in /logs si pune datele pentru rularea curenta a programului.
+		Acest feature ne-a ajutat si pentru a putea face o statistica intre toti clasificatorii si pentru a vedea care este mai bun si din ce punct de vedere.
+	10-fold-validation:
+		10-fold-validation este o tehnica ce ne ajuta sa evaluam programul nostru, partitionand corpusul in 10 parti, facandu-l sa invete cu 8 si sa testeze cu 2 dintre ele, cursiv, astfel incat sa luam toate cazurile posibile, pentru a avea rezultate mai clare.
+	Regression testing:
+		Dupa fiecare feature nou adaugat la program, in fiecare saptamana, testam ceea ce tocmai am adaugat, dar si feature-urile din trecut, pentru a ne asigura ca totul inca merge bine, si ca nimic nu este testat(ex1: cand am adaugat feature-ul de logare, ne-am asigurat ca se logheaza date de la toti clasificatorii, ex2: cand am schimbat dintr-o logare hardcodata in logarea actuala, care pt orice clasificator il logheaza automat fara a mai schimba cod, am testat daca ar loga doar pt un clasificator toate datele lui, dar si pentru 2 clasificatori toate datele lor). Acest lucru l-am facut din simplu obicei si nu a fost notat undeva. Desi nu am intampinat probleme pana acum, ne-am gandit ca uneori schimbarile pot afecta in vreun fel ceea ce era deja implementat.
+		
+	Manual testing entries:
+
+	NON OFFENSIVE
+O sa merg la mare impreuna cu familia.
+O iubesc pe mama.
+De maine ma voi apuca de sala, promit!
+Astazi am examen la facultate.(bayes fail, adaboost ok)
+Vreau sa mananc banane.
+Nu te mai suport.
+Imi plac femeile.
+	OFFENSIVE
+Sa mor eu cat de prost esti.
+Gandesti cum gandeste cainele meu.
+Du-te dracu!
+Tu nu cred ca gandesti...(bayes ok, adaboost fail)
+Sa te duci la ma-ta.(bayes ok, adaboost fail)
+Nu va luati de vegani, pentru ca nu au forta sa se apere.(bayes ok, adaboost fail)\
+Ce ratati sunt copiii mici.(adaboost fail)
+
