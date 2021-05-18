@@ -5,4 +5,5 @@ F-Measure          0.543689                  0.779525         0.440687          
           [BayNv+LemGroups] [BayNv+UnprocessedGroups] [Flip+LemGroups] [Flip+UnprocessedGroups] [BayNv_offensive+LemGroups] [BayNv_offensive+UnprocessedGroups] [BayNv_non-offensive+LemGroups] [BayNv_non-offensive+UnprocessedGroups]
 F-Measure          0.513364                  0.792303         0.426886                 0.439268                    0.515075                            0.789265                        0.509562                                0.783842          [AdaBoost+LemGroups]
 F-Measure             0.657549          [AdaBoost+LemGroups]
-F-Measure             0.657779
+F-Measure             0.657779          [BayNv+LemGroups] [BayNv+UnprocessedGroups] [Flip+LemGroups] [Flip+UnprocessedGroups] [BayNv_offensive+LemGroups] [BayNv_offensive+UnprocessedGroups] [BayNv_non-offensive+LemGroups] [BayNv_non-offensive+UnprocessedGroups] [AdaBoost+LemGroups] [AdaBoost+UnprocessedGroups]
+F-Measure          0.565979                  0.798069         0.430429                 0.448746                    0.565979                            0.798069                        0.565979                                0.798069             0.484988                      0.78135

@@ -137,33 +137,6 @@ def precision_recall(classifier, preprocessor):
         X_train = numpy.vstack(lstFolds_X)
         y_train = numpy.hstack(lstFolds_y)
 
-        # splitting the data set into training set and test set
-        # for i in range(len(X)):
-        # if _DEBUG:
-        #     X[i] = [(X[i][_], preprocessor.pretty_hot_vector[i][_], preprocessor.dataset[i][_]) for _ in
-        #             range(len(X[i]))]
-
-        # X_train, X_test, y_train, y_test = train_test_split(X[i], y[i], test_size=0.25)
-
-        # # DEBUG: am verificat ca datele de la model sunt amestecate de fiecare data cu test_train_split!
-        # # XDEBUG_train, XDEBUG_test, yDEBUG_train, yDEBUG_test = train_test_split(preprocessor.pretty_hot_vector[i], y[i], test_size=0.25)
-        # _DEBUG_show_rows = 5
-        # if _DEBUG:
-        #     XDEBUG_train = [_[1] for _ in X_train]
-        #     XDEBUG_train_review = [_[2] for _ in X_train]
-        #     X_train = [_[0] for _ in X_train]
-        #     XDEBUG_test = [_[1] for _ in X_test]
-        #     XDEBUG_test_review = [_[2] for _ in X_test]
-        #     X_test = [_[0] for _ in X_test]
-
-        #     print("\n       First %g rows in train set:" % (_DEBUG_show_rows))
-        #     print(XDEBUG_train_review[:_DEBUG_show_rows])
-        #     print(XDEBUG_train[:_DEBUG_show_rows])
-
-        #     print("\n       First %g rows in test set:" % (_DEBUG_show_rows))
-        #     print(XDEBUG_test_review[:_DEBUG_show_rows])
-        #     print(XDEBUG_test[:_DEBUG_show_rows])
-
         warnings.filterwarnings("ignore", category=FutureWarning)
         classifier.fit(X_train, y_train)
         #print(preprocessor.feature_names)
@@ -171,7 +144,7 @@ def precision_recall(classifier, preprocessor):
         if not os.path.exists('./data/models'):
             os.mkdir('./data/models')
 
-        print(os.path.exists("./data/models/AdaBoost LemGroups [ten-fold 0-1].sav"))
+        # print(os.path.exists("./data/models/AdaBoost LemGroups [ten-fold 0-1].sav"))
 
         file=open('./data/models/' + classifier.name + ' ' + preprocessor.name + ' [ten-fold ' + str(test_indexes[0]) + '-' + str(test_indexes[1]) + '].sav', 'wb')
         pickle.dump(
@@ -199,6 +172,8 @@ def precision_recall(classifier, preprocessor):
                 for j in range(len(conf_matrix)):
                     conf_matrix[i][j] += cm[i][j]
 
+        if classifier.name == "AdaBoost" or preprocessor.name !='LemGroups':
+            break
     # print(conf_matrix,total_test,total_training)
 
     # precision= TP / TP + FP
@@ -224,15 +199,15 @@ def run():
     print("Init objects...")
 
     # (dependency injection) Add new classifiers and/or preprocessors in the lists below
+    classifiers += [Classifier_NB("BayNv")]
+    classifiers += [FlipCoin("Flip")]
+    classifiers += [Classifier_NB("BayNv_offensive")]
+    classifiers += [Classifier_NB("BayNv_non-offensive")]
     classifiers += [Classifier_AdaBoost("AdaBoost")]
-    # classifiers += [Classifier_NB("BayNv")]
-    # classifiers += [FlipCoin("Flip")]
-    # classifiers += [Classifier_NB("BayNv_offensive")]
-    # classifiers += [Classifier_NB("BayNv_non-offensive")]
 
-    preprocessors += [SmallGroups("LemGroups", "preprocessors/Lematizare RACAI/corpus-lemmatized.txt", "preprocessors/Lematizare RACAI/corpus-words-list.txt")]
-    #preprocessors += [SmallGroups("LemGroups","data/16k-lemmatized.txt","data/16k-words-list.txt")]
-    #preprocessors += [SmallGroups("UnprocessedGroups", "data/16k_neprocesat.txt", "data/16k_neprocesat_words_list.txt")]
+    # preprocessors += [SmallGroups("LemGroups", "preprocessors/Lematizare RACAI/corpus-lemmatized.txt", "preprocessors/Lematizare RACAI/corpus-words-list.txt")]
+    preprocessors += [SmallGroups("LemGroups","data/8k-lemmatized.txt","data/8k-words-list.txt")]
+    preprocessors += [SmallGroups("UnprocessedGroups", "data/8k_neprocesat.txt", "data/8k_unprocessed-words-list.txt")]
 
     # display f-measure for all classifers and preprocessors
     results = pd.DataFrame(columns=["[" + n1.name + '+' + n2.name + "]" for n1 in classifiers for n2 in preprocessors],
