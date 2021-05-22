@@ -11,7 +11,7 @@ from preprocessors.Preprocesare_text import script_preprocess
 import pickle
 import os, re
 from sklearn.feature_extraction.text import CountVectorizer
-from crawlers.yt_crawler import start_crawler, next_yt_comment
+from crawlers.yt_crawler import start_crawler, next_yt_comment, highlight_comment
 
 
 def openFile():
@@ -47,7 +47,7 @@ def showStats():
 def displayResultForHybrid(pred_list):
     result = all(element == pred_list[0] for element in pred_list)
     if result:
-        displayResult(pred_list[0])
+        return displayResult(pred_list[0])
     else:
         fMeasures = []
         off = 0
@@ -63,9 +63,9 @@ def displayResultForHybrid(pred_list):
                 nonOff += float(fMeasures[i])
                 print("nonOff =", nonOff)
         if off > nonOff:
-            displayResult('1')
+            return displayResult('1')
         else:
-            displayResult('0')
+            return displayResult('0')
 
 
 def displayResult(prediction):
@@ -73,13 +73,20 @@ def displayResult(prediction):
         messageToDisplay = "The message isn't offensive."
     else:
         messageToDisplay = "The message is offensive!"
-    messagebox.showinfo('Result', messageToDisplay)
+    # messagebox.showinfo('Result', messageToDisplay)
+    global lblResult
+    lblResult.config(text=messageToDisplay)
+
+    return prediction
 
 
-def runClassifier():
+def runClassifier(selected_classifier = None):
     # luam modelul cu clasificatorul corespunzator
     model = None
-    selected_classifier = classifier.get()
+
+    if selected_classifier is None:
+        selected_classifier = classifier.get()
+
     if selected_classifier == "":
         messagebox.showinfo('Warning', 'Please select a classifier!')
     elif selected_classifier == " Hybrid":
@@ -92,8 +99,8 @@ def runClassifier():
         pred3 = run_model(model3, " Ada Boost")
         pred_list.extend([pred1, pred2, pred3])
         print(pred_list)
-        displayResultForHybrid(pred_list)
-        return 0
+        return displayResultForHybrid(pred_list)
+
     elif selected_classifier == " Bayes + lemmatization":
         model = pickle.load(open('./data/models/BayNv LemGroups.sav', 'rb'))
     elif selected_classifier == " Random + lemmatization":
@@ -106,7 +113,7 @@ def runClassifier():
         model = pickle.load(open('./data/models/AdaBoost LemGroups.sav', 'rb'))
 
     prediction = run_model(model, selected_classifier)
-    displayResult(prediction)
+    return displayResult(prediction)
 
 
 def run_model(model, selected_classifier):
@@ -148,15 +155,38 @@ def next_comment():
     if url_crawl.get() == '':
         return
 
+    global count_offensive
+    global count_nonoffensive
     global lasturl
+    global lblResult
     if url_crawl.get() != lasturl:
         lasturl = url_crawl.get()
         start_crawler(lasturl)
 
-    txtarea.insert(END, next_yt_comment())
+    comment, comment_index = next_yt_comment()
+    if comment_index == -1:
+        lblResult.config(text='Offensive: ' + str(count_offensive) +', non-offensive: ' + str(count_nonoffensive))
+        count_nonoffensive = 0
+        count_offensive = 0
+        return
+
+    txtarea.insert(END, comment)
+
+    pred = runClassifier()
+    if pred == '0':
+        highlight_comment(comment_index, "#66ff66") # green
+        count_nonoffensive += 1
+    else:
+        highlight_comment(comment_index, "#ff6666") # red
+        count_offensive += 1
+
+    next_comment()
 
 
 lasturl = ""
+comment_index = 0
+count_nonoffensive = 0
+count_offensive = 0
 
 ws = Tk()
 ws.title("Offensive Language Detection for Romanian Language")
@@ -180,6 +210,9 @@ label2 = Label(ws, text="Alegeti clasificatorul", font="Helvetica 16 bold italic
                bg="#fb0")
 label2.grid(row=2, column=1, pady=2)
 
+lblResult = Label(ws, text="Rezultat", font="Helvetica 16 bold italic", fg="white", bg="#fb0")
+lblResult.grid(row=5, column=1, pady=2)
+
 n = tkinter.StringVar()
 classifier = ttk.Combobox(ws, width=27, textvariable=n)
 
@@ -200,6 +233,6 @@ Button(ws, text="Clear", command=clearText, height=1, width=20).grid(row=4, colu
 Button(ws, text="Run", command=runClassifier, height=1, width=20).grid(row=4, column=1, pady=2)
 Button(ws, text="Open File", command=openFile, height=1, width=20).grid(row=4, column=0, pady=2, padx=20)
 
-Button(ws, text="Next YT Comment", command=next_comment, height=1, width=20).grid(row=7, column=0, pady=2)
+Button(ws, text="Predict YT Comments", command=next_comment, height=1, width=20).grid(row=7, column=0, pady=2)
 
 ws.mainloop()

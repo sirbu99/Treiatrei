@@ -128,6 +128,9 @@ def browseURL(url, user, pwd):
     # dumpFile(title="after loading", content=browser.find_element_by_tag_name("html"))
     return browser
 
+def highlight_comment(index, color):
+    browser.execute_script("arguments[0].setAttribute('style', 'background-color: " + color + "')", comments[index])
+
 def next_yt_comment():
     global comments
     global comment_index
@@ -137,6 +140,9 @@ def next_yt_comment():
         comments = browser.find_elements_by_xpath("//ytd-comment-thread-renderer")
         browser.execute_script("arguments[0].scrollIntoView(true);", comments[-1])
         simulateHumanShort()
+
+    if comment_index >= len(comments):
+        return "", -1
 
     comment = comments[comment_index]
 
@@ -151,7 +157,7 @@ def next_yt_comment():
     except:
         None
 
-    return content.text
+    return content.text, comment_index
 
     # print_v(content.text)
     # data += [[content.text, len(content.text), url]]
@@ -168,7 +174,9 @@ def start_crawler(url):
 
     # print_v("\n======= Script started with arguments " + str(sys.argv) + " =========")
     global msg
-    
+    global comment_index
+    comment_index = -1
+
     # # store facebook credentials in pickle file. Do this once, to create the pickle file, then comment the following 3 lines of code
 
     # fb_credentials = open("../..//crawlers/Crawler - youtube/fb.pickle","rb")
